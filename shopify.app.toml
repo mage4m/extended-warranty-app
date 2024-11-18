@@ -1,0 +1,28 @@
+# Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
+
+client_id = "d7d6c5d3166b336aff4bdd4b704aa438"
+name = "extended-warranty-app"
+handle = "extended-warranty-app"
+application_url = "https://experiment-commitments-apparent-stevens.trycloudflare.com"
+embedded = true
+
+[build]
+automatically_update_urls_on_dev = true
+dev_store_url = "mage4-test-store.myshopify.com"
+
+[access_scopes]
+# Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
+scopes = "write_products"
+
+[auth]
+redirect_urls = [
+  "https://experiment-commitments-apparent-stevens.trycloudflare.com/auth/callback",
+  "https://experiment-commitments-apparent-stevens.trycloudflare.com/auth/shopify/callback",
+  "https://experiment-commitments-apparent-stevens.trycloudflare.com/api/auth/callback"
+]
+
+[webhooks]
+api_version = "2024-10"
+
+[pos]
+embedded = false
