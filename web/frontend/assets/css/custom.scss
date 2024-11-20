@@ -1,6 +1,23 @@
+.d-flex {
+      display: flex;
+}
+
 #homePage {
       #title-Box {
             margin-bottom: 20px;
             text-align: center;
+      }
+
+      .duration-wrapper {
+            align-items: flex-end;
+            justify-content: space-between;
+
+            label {
+                  text-wrap: nowrap;
+            }
+
+            >* {
+                  flex: 0 0 45%;
+            }
       }
 }
