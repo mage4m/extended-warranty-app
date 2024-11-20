@@ -8,6 +8,7 @@ import {
     Select,
     Box,
     FormLayout,
+    Grid,
 } from "@shopify/polaris";
 import { TitleBar } from "@shopify/app-bridge-react";
 import { useTranslation, Trans } from "react-i18next";
@@ -19,9 +20,9 @@ export default function HomePage() {
     const [dashboard, setDashboard] = useState("Warranty Upsell");
     const [typeOfUpSell, setTypeOfUpSell] = useState("");
     const [policyName, setPolicyName] = useState("");
-    const [warrantyPrice, setWarrantyPrice] = useState(0);
+    const [warrantyPrice, setWarrantyPrice] = useState("");
     const [selected, setSelected] = useState("Warranty");
-
+    const [daysOrYears, setDaysOrYears] = useState("Days");
     // Translation
     const { t } = useTranslation();
 
@@ -37,9 +38,18 @@ export default function HomePage() {
         }
         setSelected(e);
     });
+    const handleDuration = () => {
+        if (daysOrYears === "Days") {
+            setDaysOrYears("Years");
+        } else {
+            setDaysOrYears("Days");
+        }
+    };
 
     // Handle Submit
-    const handleSubmit = useCallback((e) => {}, []);
+    const handleSubmit = useCallback(async (e) => {
+        await fetch("/api/products/count").then(console.log(response.json()));
+    }, []);
 
     // Select Options
     const options = [
@@ -76,11 +86,19 @@ export default function HomePage() {
                                             value={typeOfUpSell}
                                             onChange={upSellChange}
                                         />
-                                        <TextField
-                                            label="Duration (Years)"
-                                            value={policyName}
-                                            onChange={policyChange}
-                                        />
+
+                                        <div className="d-flex duration-wrapper">
+                                            <TextField
+                                                label={`Duration (${daysOrYears})`}
+                                                value={policyName}
+                                                onChange={policyChange}
+                                            />
+
+                                            <Button onClick={handleDuration}>
+                                                To {daysOrYears}
+                                            </Button>
+                                        </div>
+
                                         <TextField
                                             label={
                                                 selected === "Warranty"
