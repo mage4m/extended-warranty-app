@@ -47,8 +47,8 @@ export default function HomePage() {
     };
 
     // Handle Submit
-    const handleSubmit = useCallback(async (e) => {
-        await fetch("/api/products/count").then(console.log(response.json()));
+    const handleSubmit = useCallback((e) => {
+        console.log(e.target);
     }, []);
 
     // Select Options
@@ -93,7 +93,6 @@ export default function HomePage() {
                                                 value={policyName}
                                                 onChange={policyChange}
                                             />
-
                                             <Button onClick={handleDuration}>
                                                 To {daysOrYears}
                                             </Button>
