@@ -1,5 +1,9 @@
 <?php
 
+use App\Http\Controllers\API\{
+    UpsellProductSelectorController,
+    UpsellController
+};
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -16,4 +20,14 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return "Hello API";
+});
+
+/* Wrapping up the routes in middleware to get Shopify session */
+Route::middleware(['shopify.auth'])->group(function () {
+
+    //! For Upsell
+
+    //! For Upsell Products
+    Route::resource('upsell_products', UpsellProductSelectorController::class);
+    Route::delete('upsell_products-delete', [UpsellProductSelectorController::class, 'destroy']);
 });

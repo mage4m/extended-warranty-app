@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "eb0df5d8312c4ad1ac364d9ff72111e8"
-application_url = "https://ahead-roof-viii-usd.trycloudflare.com"
+application_url = "https://bridges-downloaded-observe-overview.trycloudflare.com"
 embedded = true
 name = "AppWaranty"
 handle = "appwaranty"
@@ -20,9 +20,9 @@ scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://ahead-roof-viii-usd.trycloudflare.com/auth/callback",
-  "https://ahead-roof-viii-usd.trycloudflare.com/auth/shopify/callback",
-  "https://ahead-roof-viii-usd.trycloudflare.com/api/auth/callback"
+  "https://bridges-downloaded-observe-overview.trycloudflare.com/auth/callback",
+  "https://bridges-downloaded-observe-overview.trycloudflare.com/auth/shopify/callback",
+  "https://bridges-downloaded-observe-overview.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
