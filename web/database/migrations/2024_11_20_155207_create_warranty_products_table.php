@@ -18,10 +18,12 @@ class CreateWarrantyProductsTable extends Migration
             $table->unsignedBigInteger('warranty_id');
             $table->string('name');
             $table->string('type');
-            $table->string('duration');
+            $table->string('duration_number');
+            $table->string('duration_unit');
             $table->string('price');
             $table->string('clauses');
             $table->string('applicable_products')->nullable();
+            $table->boolean('status')->default(false);
             $table->timestamps();
         });
     }
