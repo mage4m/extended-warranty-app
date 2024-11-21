@@ -8,42 +8,53 @@ import {
     ResourceList,
     ResourceItem,
     LegacyStack,
-    LegacyTabs,
+    List,
 } from "@shopify/polaris";
 import { items } from "../utils/warrantyclauses";
-const WarrantyClausesModal = () => {
+const WarrantyClausesModal = ({ warrantyClauses, setWarrantyClauses }) => {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
+    // const [warrantyClauses, setWarrantyClauses] = useState([]);
 
     const handleOpen = useCallback(() => setOpen(true));
     const handleClose = useCallback(() => setOpen(false));
 
-    const handleAdd = () => {
+    const handleAdd = useCallback(() => {
         if (value.trim() === "") {
             setError("Term cannot be empty");
-        } else {
+            return;
+        }
+        setWarrantyClauses([...warrantyClauses, value]);
+        setValue("");
+    }, [value, warrantyClauses, setWarrantyClauses]);
+
+    const handleChange = useCallback((newValue) => {
+        setValue(newValue);
+        if (newValue.trim() !== "") {
             setError("");
-            // Add the warranty clause to your data
-            // handleClose();
         }
-    };
+    }, []);
 
-    const handleChange = (value) => {
-        if (value) {
-            setError(false);
-        }
-        setValue(value);
-    };
+    const handleUse = useCallback((clause) => {
+        setValue(clause);
+    }, []);
 
+    const handleDeleteClause = useCallback(
+        (index) => {
+            setWarrantyClauses(warrantyClauses.filter((_, i) => i !== index));
+        },
+        [warrantyClauses, setWarrantyClauses],
+    );
 
     const [selectedItems, setSelectedItems] = useState([]);
 
     return (
         <>
             <Button fullWidth size="large" onClick={handleOpen}>
-                Add Warranty Clauses
+                {`Add Warranty Clauses${warrantyClauses?.length > 0 ? ` (${warrantyClauses.length})` : ""}`}
             </Button>
+
             <Modal
                 open={open}
                 onClose={handleClose}
@@ -56,7 +67,7 @@ const WarrantyClausesModal = () => {
                             columnSpan={{
                                 lg: 10,
                                 xl: 10,
-                                md: 8,
+                                md: 6,
                                 sm: 6,
                                 xs: 6,
                             }}
@@ -65,7 +76,7 @@ const WarrantyClausesModal = () => {
                                 fullWidth
                                 label="Warranty Clause"
                                 value={value}
-                                onChange={(value) => handleChange(value)}
+                                onChange={handleChange}
                                 helpText={
                                     !error && `Enter your warranty clause`
                                 }
@@ -76,7 +87,7 @@ const WarrantyClausesModal = () => {
                             columnSpan={{
                                 lg: 2,
                                 xl: 2,
-                                md: 4,
+                                md: 6,
                                 sm: 6,
                                 xs: 6,
                             }}
@@ -93,59 +104,97 @@ const WarrantyClausesModal = () => {
                                     fullWidth
                                     onClick={handleAdd}
                                 >
-                                    Add Term
+                                    Add Term wdwd
                                 </Button>
                             </LegacyStack>
                         </Grid.Cell>
                     </Grid>
                 </Modal.Section>
-                <Modal.Section>
-                    <LegacyStack spacing="loose" vertical>
-                        <Text as="h4" variant="headingSm">
-                            Example clauses
+                {warrantyClauses?.length > 0 && (
+                    <Modal.Section>
+                        <Text as="h3" variant="headingSm">
+                            Your clauses
                         </Text>
-
-                        <ResourceList
-                            resourceName={{
-                                singular: "clauses post",
-                                plural: "clauses posts",
-                            }}
-                            items={items}
-                            selectedItems={selectedItems}
-                            onSelectionChange={setSelectedItems}
-                            // selectable
-                            renderItem={(item) => {
-                                const { id, title } = item;
-
-                                return (
-                                    <ResourceItem
-                                        id={id}
-                                        accessibilityLabel={`View details for ${title}`}
-                                        name={title}
-                                    >
-                                        <Text
-                                            variant="headingSm"
-                                            fontWeight="bold"
-                                            as="h3"
-                                        >
-                                            {title}
-                                        </Text>
+                        <List type="bullet">
+                            {warrantyClauses &&
+                                warrantyClauses?.map((clause, index) => (
+                                    <List.Item key={index}>
                                         <LegacyStack
                                             alignment="trailing"
-                                            distribution="trailing"
-                                            spacing="tight"
+                                            distribution="equalSpacing"
                                         >
-                                            <Button>use</Button>
+                                            <Text
+                                                style={{ flex: 1 }}
+                                                as="h3"
+                                                variant="headingSm"
+                                            >
+                                                {clause}
+                                            </Text>
+                                            <Button
+                                                size="micro"
+                                                destructive
+                                                onClick={() =>
+                                                    handleDeleteClause(index)
+                                                }
+                                            >
+                                                Delete
+                                            </Button>
                                         </LegacyStack>
-                                    </ResourceItem>
-                                );
-                            }}
-                        />
-                    </LegacyStack>
+                                    </List.Item>
+                                ))}
+                        </List>
+                    </Modal.Section>
+                )}
+
+                <Modal.Section>
+                    <Text as="h4" variant="headingSm">
+                        Example clauses
+                    </Text>
+                    <ResourceList
+                        resourceName={{
+                            singular: "clauses post",
+                            plural: "clauses posts",
+                        }}
+                        items={items}
+                        // selectedItems={selectedItems}
+                        // onSelectionChange={setSelectedItems}
+                        // selectable
+                        renderItem={(item) => {
+                            const { id, title } = item;
+
+                            return (
+                                <ResourceItem
+                                    id={id}
+                                    accessibilityLabel={`View details for ${title}`}
+                                    name={title}
+                                    verticalAlignment="center"
+                                >
+                                    <Text
+                                        variant="headingSm"
+                                        fontWeight="bold"
+                                        as="h3"
+                                    >
+                                        {title}
+                                    </Text>
+                                    <LegacyStack
+                                        alignment="trailing"
+                                        distribution="trailing"
+                                        spacing="tight"
+                                    >
+                                        <Button
+                                            onClick={() => handleUse(title)}
+                                        >
+                                            use
+                                        </Button>
+                                    </LegacyStack>
+                                </ResourceItem>
+                            );
+                        }}
+                    />
                 </Modal.Section>
             </Modal>
         </>
     );
 };
 
-export default WarrantyClausesModal;
+export default React.memo(WarrantyClausesModal);

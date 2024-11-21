@@ -24,8 +24,12 @@ const ProductSelector = ({
     subtitle = "Select",
     edtitle = "Edit",
     size = "medium",
+    ISOpen = true,
+    selectedProducts,
+    setSelectedProducts
+
 }) => {
-    const [selectedProducts, setSelectedProducts] = useState([]);
+    // const [selectedProducts, setSelectedProducts] = useState([]);
     const {
         isLoading,
         error,
@@ -83,7 +87,7 @@ const ProductSelector = ({
                 >
                     {`${settingsObj?.length ? edtitle : subtitle} ${title} ${settingsObj?.length > 0 && `(${settingsObj?.length})`}`}
                 </Button>
-                {isLoading ? (
+                {!ISOpen ? null : isLoading ? (
                     <SkeletonBodyText />
                 ) : (
                     settingsObj?.length > 0 && (

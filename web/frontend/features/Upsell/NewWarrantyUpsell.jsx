@@ -5,54 +5,144 @@ import {
     Button,
     TextField,
     Select,
-    Box,
     FormLayout,
     Grid,
     Card,
-    Stack,
-    Modal,
-    TextContainer,
     LegacyStack,
 } from "@shopify/polaris";
-import { useTranslation } from "react-i18next";
 import { useState, useCallback } from "react";
 import ProductSelector from "../ProductSelector";
-import { UpsellProducts } from "../../utils/api/resource";
+import { UpsellPolicy, UpsellProducts } from "../../utils/api/resource";
 import { UpsellProducts_Delete } from "../../utils/api/delete";
 import { WarrantyClausesModal } from "./components";
+import { useApiMutation } from "../../hooks/useApiRequests";
+import Swal from "sweetalert2";
 
 const NewWarrantyUpsell = () => {
-    const [typeOfUpSell, setTypeOfUpSell] = useState("");
-    const [policyName, setPolicyName] = useState("");
-    const [warrantyPrice, setWarrantyPrice] = useState("");
-    const [selected, setSelected] = useState("Warranty");
-    const [daysOrYears, setDaysOrYears] = useState("Days");
-    // const [warranty, setWarranty] = useState(false);
-
-    // const WarrantyPopup = useCallback(() => {
-    //     setWarranty(!warranty);
-    // }, [warranty]);
-
-    const upSellChange = useCallback((value) => setTypeOfUpSell(value));
-    const policyChange = useCallback((value) => setPolicyName(value));
-    const warrantyPriceChange = useCallback((value) => setWarrantyPrice(value));
-    const handleSelectChange = useCallback((value) => {
-        setSelected(value);
+    const [loading, setLoading] = useState(false);
+    const [warrantyUpsell, setWarrantyUpsell] = useState({
+        typeOfUpSell: "Warranty",
+        policyName: "",
+        duration: "",
+        daysOrYears: "Days",
+        warrantyPrice: "",
+        warrantyClauses: [],
+        products: []
     });
-    const handleDuration = () => {
-        setDaysOrYears(daysOrYears === "Days" ? "Years" : "Days");
-    };
 
-    const handleSubmit = useCallback(async (e) => {
-        e.preventDefault();
-        // Handle form submission
-        alert("Logs")
+    const mutation = useApiMutation(UpsellPolicy, "POST", {
+        onSuccess: (data) => {
+            setRates(false);
+            Swal.fire({
+                icon: "success",
+                title: "Success",
+                text: data?.message,
+            });
+            setWarrantyUpsell({
+                typeOfUpSell: "Warranty",
+                policyName: "",
+                duration: "",
+                daysOrYears: "Days",
+                warrantyPrice: "",
+                warrantyClauses: [],
+                products: []
+            });
+            setLoading(false);
+            // refetch();
+        },
+        onError: (error) => {
+            Swal.fire({
+                icon: "error",
+                title: "Error",
+                text: `Failed: ${error?.message}`,
+            });
+            setLoading(false);
+        },
+    });
+
+    // const handleSubmit2 = async () => {
+    //     if (!rateName || !price || isNaN(price)) {
+    //         Swal.fire({
+    //             icon: "warning",
+    //             title: "Validation Error",
+    //             text: "Please enter a valid rate name and price.",
+    //         });
+    //         return;
+    //     }
+
+    //     setLoading(true);
+
+    //     const shippingRate = {
+    //         rateName,
+    //         rateDescription: rateDescription || null,
+    //         price: parseFloat(price),
+    //         conditions: {
+    //             applyToCountries,
+    //             applyToProvinces,
+    //             condition_type: conditionType,
+    //             min_value: parseFloat(minValue),
+    //             max_value: parseFloat(maxValue),
+    //         },
+    //     };
+    //     await mutation.mutateAsync({ shippingRate });
+    // };
+
+    const handleInputChange = useCallback(
+        (field) => (value) => {
+            setWarrantyUpsell((prevState) => ({
+                ...prevState,
+                [field]: value,
+            }));
+        },
+        [],
+    );
+
+    const handleDurationToggle = useCallback(() => {
+        setWarrantyUpsell((prevState) => ({
+            ...prevState,
+            daysOrYears: prevState.daysOrYears === "Days" ? "Years" : "Days",
+        }));
     }, []);
+
+    const handleSubmit = useCallback(
+        async (e) => {
+            e.preventDefault();
+            console.log("====================================");
+            setLoading(true);
+            console.log(warrantyUpsell);
+            console.log("====================================");
+            await mutation.mutateAsync({ warrantyUpsell });
+            // setWarrantyUpsell({
+            //     typeOfUpSell: "Warranty",
+            //     policyName: "",
+            //     duration: "",
+            //     daysOrYears: "Days",
+            //     warrantyPrice: "",
+            //     warrantyClauses: [
+            //         "testcheckoutfunction will replace your item once per warranty period if your item is lost or stolen",
+            //     ],
+            // });
+        },
+        [warrantyUpsell],
+    );
 
     const options = [
         { label: "Warranty", value: "Warranty" },
         { label: "Extended Warranty", value: "Extended Warranty" },
     ];
+
+    const setWarrantyClauses = (updatedClauses) => {
+        setWarrantyUpsell((prev) => ({
+            ...prev,
+            warrantyClauses: updatedClauses,
+        }));
+    };
+    const setProducts = (updatedProducts) => {
+        setWarrantyUpsell((prev) => ({
+            ...prev,
+            products: updatedProducts,
+        }));
+    };
 
     return (
         <Layout.Section>
@@ -75,8 +165,8 @@ const NewWarrantyUpsell = () => {
                                 <Select
                                     label="Type of Upsell"
                                     options={options}
-                                    onChange={handleSelectChange}
-                                    value={selected}
+                                    onChange={handleInputChange("typeOfUpSell")}
+                                    value={warrantyUpsell?.typeOfUpSell}
                                 />
                             </Grid.Cell>
                             <Grid.Cell
@@ -90,9 +180,11 @@ const NewWarrantyUpsell = () => {
                             >
                                 <TextField
                                     label="Policy Name"
-                                    value={typeOfUpSell}
-                                    onChange={upSellChange}
+                                    value={warrantyUpsell?.policyName}
+                                    onChange={handleInputChange("policyName")}
                                     helpText="The name of the policy your customers will see"
+                                    requiredIndicator
+                                    required
                                 />
                             </Grid.Cell>
                             <Grid.Cell
@@ -106,12 +198,14 @@ const NewWarrantyUpsell = () => {
                             >
                                 <div className="d-flex duration-wrapper">
                                     <TextField
-                                        label={`Duration (${daysOrYears})`}
-                                        value={policyName}
-                                        onChange={policyChange}
+                                        label={`Duration (${warrantyUpsell?.daysOrYears})`}
+                                        value={warrantyUpsell?.duration}
+                                        onChange={handleInputChange("duration")}
+                                        requiredIndicator
+                                        required
                                     />
-                                    <Button onClick={handleDuration}>
-                                        To {daysOrYears}
+                                    <Button onClick={handleDurationToggle}>
+                                        To {warrantyUpsell?.daysOrYears}
                                     </Button>
                                 </div>
                             </Grid.Cell>
@@ -125,14 +219,20 @@ const NewWarrantyUpsell = () => {
                                 }}
                             >
                                 <TextField
+                                    type="number"
                                     label={
-                                        selected === "Warranty"
+                                        warrantyUpsell?.typeOfUpSell ===
+                                        "Warranty"
                                             ? "Warranty Price"
                                             : "Extended Warranty Price"
                                     }
-                                    value={warrantyPrice}
-                                    onChange={warrantyPriceChange}
+                                    value={warrantyUpsell?.warrantyPrice}
+                                    onChange={handleInputChange(
+                                        "warrantyPrice",
+                                    )}
                                     helpText="Price is in GBP"
+                                    requiredIndicator
+                                    required
                                 />
                             </Grid.Cell>
                         </Grid>
@@ -160,6 +260,11 @@ const NewWarrantyUpsell = () => {
                                     getUrl={UpsellProducts}
                                     postUrl={UpsellProducts}
                                     deleteUrl={UpsellProducts_Delete}
+                                    ISOpen={false}
+                                    selectedProducts={
+                                        warrantyUpsell?.products || []
+                                    }
+                                    setSelectedProducts={setProducts}
                                 />
                             </Grid.Cell>
                             <Grid.Cell
@@ -171,7 +276,12 @@ const NewWarrantyUpsell = () => {
                                     xs: 6,
                                 }}
                             >
-                                <WarrantyClausesModal />
+                                <WarrantyClausesModal
+                                    warrantyClauses={
+                                        warrantyUpsell?.warrantyClauses || []
+                                    }
+                                    setWarrantyClauses={setWarrantyClauses}
+                                />
                             </Grid.Cell>
                         </Grid>
 
@@ -182,7 +292,7 @@ const NewWarrantyUpsell = () => {
                             distribution="trailing"
                             spacing="loose"
                         >
-                            <Button submit primary>
+                            <Button loading={loading} submit primary>
                                 Create New Warranty Upsell
                             </Button>
                         </LegacyStack>

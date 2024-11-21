@@ -26,6 +26,7 @@ Route::get('/', function () {
 Route::middleware(['shopify.auth'])->group(function () {
 
     //! For Upsell
+    Route::resource('upsell-policy', UpsellController::class);
 
     //! For Upsell Products
     Route::resource('upsell_products', UpsellProductSelectorController::class);
