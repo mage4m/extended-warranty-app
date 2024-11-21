@@ -1,3 +1,3 @@
-export { useAppQuery } from "./useAppQuery";
-export { useAuthenticatedFetch } from "./useAuthenticatedFetch";
+import { useApiMutation, useApiRequest } from "./useApiRequests";
 
+export { useApiMutation, useApiRequest };

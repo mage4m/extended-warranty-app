@@ -11,7 +11,10 @@ import {
     List,
 } from "@shopify/polaris";
 import { items } from "../utils/warrantyclauses";
-const WarrantyClausesModal = ({ warrantyClauses, setWarrantyClauses }) => {
+const WarrantyClausesModal = ({
+    warrantyClauses,
+    setWarrantyClauses,
+}) => {
     const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
@@ -54,6 +57,7 @@ const WarrantyClausesModal = ({ warrantyClauses, setWarrantyClauses }) => {
             <Button fullWidth size="large" onClick={handleOpen}>
                 {`Add Warranty Clauses${warrantyClauses?.length > 0 ? ` (${warrantyClauses.length})` : ""}`}
             </Button>
+
 
             <Modal
                 open={open}
