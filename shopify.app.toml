@@ -1,29 +1,28 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "eb0df5d8312c4ad1ac364d9ff72111e8"
-application_url = "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com"
+client_id = "613fb85300cbed6a8a058d7d96294a70"
+application_url = "https://increasing-vid-arm-barbara.trycloudflare.com"
 embedded = true
-name = "AppWaranty"
-handle = "appwaranty"
-
-[build]
-include_config_on_deploy = true
-dev_store_url = "appwaranty.myshopify.com"
-automatically_update_urls_on_dev = true
+name = "WarrantyApp"
+handle = "warrantyapp"
 
 [webhooks]
 api_version = "2024-10"
 
 [access_scopes]
 # Learn more at https://shopify.dev/docs/apps/tools/cli/configuration#access_scopes
-scopes = "read_products,write_products"
+scopes = "write_products"
 
 [auth]
 redirect_urls = [
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/auth/callback",
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/auth/shopify/callback",
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/api/auth/callback"
+  "https://increasing-vid-arm-barbara.trycloudflare.com/auth/callback",
+  "https://increasing-vid-arm-barbara.trycloudflare.com/auth/shopify/callback",
+  "https://increasing-vid-arm-barbara.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
 embedded = false
+
+[build]
+dev_store_url = "appwaranty.myshopify.com"
+automatically_update_urls_on_dev = true
