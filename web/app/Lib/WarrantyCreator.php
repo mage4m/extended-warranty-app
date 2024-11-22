@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+//declare(strict_types=1);
 
 namespace App\Lib;
 
@@ -11,120 +11,80 @@ use Shopify\Clients\HttpResponse;
 
 class WarrantyCreator
 {
-    private const CREATE_PRODUCTS_MUTATION = <<<'QUERY'
+    private const CREATE_PRODUCT_MUTATION = <<<'QUERY'
     mutation populateProduct($input: ProductInput!) {
         productCreate(input: $input) {
             product {
                 id
+                variants(first: 10) {
+                            edges {
+                                node {
+                                    id
+                                }
+                            }
+                        }
             }
         }
     }
     QUERY;
 
-    public static function call(Session $session, int $count)
-    {
-        $client = new Graphql($session->getShop(), $session->getAccessToken());
-
-        for ($i = 0; $i < $count; $i++) {
-            $response = $client->query(
-                [
-                    "query" => self::CREATE_PRODUCTS_MUTATION,
-                    "variables" => [
-                        "input" => [
-                            "title" => self::randomTitle(),
-                        ]
-                    ]
-                ],
-            );
-
-
-            $body = HttpResponse::fromResponse($response)->getDecodedBody();
-
-            if ($response->getStatusCode() !== 200 || isset($body["errors"])) {
-                throw new ShopifyProductCreatorException($response->getBody()->__toString(), $response);
+    private const CREATE_PRODUCT_VARIANT_PRICE_MUTATION = <<<'QUERY'
+    mutation productVariantsBulkUpdate($productId: ID!, $variants: [ProductVariantsBulkInput!]!) {
+        productVariantsBulkUpdate(productId: $productId, variants: $variants) {
+            productVariants {
+                id
+                price
+            }
+            userErrors {
+                field
+                message
             }
         }
     }
+QUERY;
 
-    private static function randomTitle()
+    public static function call(Session $session, array $productDetails)
     {
-        $adjective = self::ADJECTIVES[mt_rand(0, count(self::ADJECTIVES) - 1)];
-        $noun = self::NOUNS[mt_rand(0, count(self::NOUNS) - 1)];
+        $client = new Graphql($session->getShop(), $session->getAccessToken());
+        $response1 = $client->query(
+            [
+                "query" => self::CREATE_PRODUCT_MUTATION,
+                "variables" => [
+                    "input" => [
+                        "title" => $productDetails['policyName'] . ' (' . $productDetails['typeOfUpSell'] . ')',
+                        "descriptionHtml" => '<p><b>DO NOT PURCHASE THE WARRANTY FROM THIS PAGE</b><br><br>Coverage is provided by the store you are purchasing the product from. To make a claim on sell warranty, please visit <a href="#!">Claim Forum</a>. By purchasing this warranty/extended warranty, you are agreeing to .</p>',
+                    ],
+                ]
+            ],
+        );
+        $body1 = HttpResponse::fromResponse($response1)->getDecodedBody();
 
-        return "$adjective $noun";
+        $product = [
+            'product_id' => $body1['data']['productCreate']['product']['id'],
+            'product_variant_id' => $body1['data']['productCreate']['product']['variants']['edges'][0]['node']['id']
+        ];
+
+        if ($response1->getStatusCode() !== 200 || isset($body["errors"])) {
+            throw new ShopifyProductCreatorException($response1->getBody()->__toString(), $response1);
+        }
+        $response2 = $client->query(
+            [
+                "query" => self::CREATE_PRODUCT_VARIANT_PRICE_MUTATION,
+                "variables" => [
+                    "productId" => $product['product_id'],
+                    "variants" => [
+                        "id" => $product['product_variant_id'],
+                        "price" => $productDetails['warrantyPrice'],
+                    ]
+                ]
+            ],
+        );
+        $body2 = HttpResponse::fromResponse($response2)->getDecodedBody();
+
+        if ($response2->getStatusCode() !== 200 || isset($body2["errors"])) {
+            throw new ShopifyProductCreatorException($response2->getBody()->__toString(), $response2);
+        }
+
+        return $product;
     }
-
-    private static function randomPrice()
-    {
-
-        return (100.0 + mt_rand(0, 1000)) / 100;
-    }
-
-    private const ADJECTIVES = [
-        "autumn",
-        "hidden",
-        "bitter",
-        "misty",
-        "silent",
-        "empty",
-        "dry",
-        "dark",
-        "summer",
-        "icy",
-        "delicate",
-        "quiet",
-        "white",
-        "cool",
-        "spring",
-        "winter",
-        "patient",
-        "twilight",
-        "dawn",
-        "crimson",
-        "wispy",
-        "weathered",
-        "blue",
-        "billowing",
-        "broken",
-        "cold",
-        "damp",
-        "falling",
-        "frosty",
-        "green",
-        "long",
-    ];
-
-    private const NOUNS = [
-        "waterfall",
-        "river",
-        "breeze",
-        "moon",
-        "rain",
-        "wind",
-        "sea",
-        "morning",
-        "snow",
-        "lake",
-        "sunset",
-        "pine",
-        "shadow",
-        "leaf",
-        "dawn",
-        "glitter",
-        "forest",
-        "hill",
-        "cloud",
-        "meadow",
-        "sun",
-        "glade",
-        "bird",
-        "brook",
-        "butterfly",
-        "bush",
-        "dew",
-        "dust",
-        "field",
-        "fire",
-        "flower",
-    ];
 }

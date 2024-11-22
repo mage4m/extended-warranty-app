@@ -4,28 +4,19 @@ namespace App\Http\Controllers;
 
 use App\Lib\WarrantyCreator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class WarrantyProductsController extends Controller
 {
-    private $dummydata = [
-        'name' => 'Warranty Product',
-        'price' => '100',
-        'type' => 'Warranty',
-        'duration_number' => '30',
-        'duration_unit' => 'day',
-        'clauses' => 'adsfasdfasdf,asdfsadfas',
-        'applicable_products' => '1,3,12'
-
-    ];
-
     public function createWarrantyProduct(Request $request)
     {
-        dd($request->json()->all());
         /** @var AuthSession */
         $session = $request->get('shopifySession'); // Provided by the shopify.auth middleware, guaranteed to be active
+        $productParams = $request->get('warrantyUpsell');
         $success = $code = $error = null;
+        $warrantyID = '';
         try {
-            WarrantyCreator::call($session, 5);
+            $warrantyID = WarrantyCreator::call($session, $productParams);
             $success = true;
             $code = 200;
             $error = null;
@@ -44,7 +35,8 @@ class WarrantyProductsController extends Controller
             }
 
             Log::error("Failed to create products: $error");
-        } finally {
+        }
+        finally {
             return response()->json(["success" => $success, "error" => $error], $code);
         }
     }

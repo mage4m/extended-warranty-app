@@ -15,7 +15,8 @@ class CreateWarrantyProductsTable extends Migration
     {
         Schema::create('warranty_products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('warranty_id');
+            $table->string('warranty_id');
+            $table->string('warranty_variant_id');
             $table->string('name');
             $table->string('type');
             $table->string('duration_number');
