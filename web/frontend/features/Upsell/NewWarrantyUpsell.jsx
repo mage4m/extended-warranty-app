@@ -43,7 +43,6 @@ const NewWarrantyUpsell = () => {
 
     const mutation = useApiMutation(WarrantyCreate, "POST", {
         onSuccess: (data) => {
-            setRates(false);
             Swal.fire({
                 icon: "success",
                 title: "Success",
