@@ -56,12 +56,12 @@ export const useSettingsManagement = (getUrl, postUrl, deleteUrl) => {
                 },
             );
             setSettingsObj(response?.data?.products);
-            Swal.fire({
-                icon: "success",
-                text: response?.data?.message,
-                showConfirmButton: false,
-                timer: 1500,
-            });
+            // Swal.fire({
+            //     icon: "success",
+            //     text: response?.data?.message,
+            //     showConfirmButton: false,
+            //     timer: 1500,
+            // });
             // return response?.data?.products;
         } catch (err) {
             setError(err?.message);

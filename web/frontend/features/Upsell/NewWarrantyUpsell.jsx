@@ -17,9 +17,12 @@ import { UpsellProducts_Delete } from "../../utils/api/delete";
 import { WarrantyClausesModal } from "./components";
 import { useApiMutation } from "../../hooks";
 import Swal from "sweetalert2";
+import { WarrantyCreate } from "../../utils/api/post";
 
 const NewWarrantyUpsell = () => {
     const [loading, setLoading] = useState(false);
+
+    //! Error State
     const [error, setError] = useState({
         policyName: "",
         duration: "",
@@ -38,7 +41,7 @@ const NewWarrantyUpsell = () => {
         products: [],
     });
 
-    const mutation = useApiMutation(UpsellPolicy, "POST", {
+    const mutation = useApiMutation(WarrantyCreate, "POST", {
         onSuccess: (data) => {
             setRates(false);
             Swal.fire({
@@ -211,6 +214,7 @@ const NewWarrantyUpsell = () => {
                                 >
                                     <div className="d-flex duration-wrapper">
                                         <TextField
+                                        type="number"
                                             label={`Duration (${warrantyUpsell?.daysOrYears})`}
                                             value={warrantyUpsell?.duration}
                                             onChange={handleInputChange(

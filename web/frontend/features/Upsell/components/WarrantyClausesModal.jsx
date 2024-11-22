@@ -40,6 +40,7 @@ const WarrantyClausesModal = ({
     }, []);
 
     const handleUse = useCallback((clause) => {
+        setError("");
         setValue(clause);
     }, []);
 
@@ -108,7 +109,7 @@ const WarrantyClausesModal = ({
                                     fullWidth
                                     onClick={handleAdd}
                                 >
-                                    Add Term wdwd
+                                    Add Term
                                 </Button>
                             </LegacyStack>
                         </Grid.Cell>
