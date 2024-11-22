@@ -85,7 +85,7 @@ const ProductSelector = ({
                     size={size}
                     onClick={showResourcePicker}
                 >
-                    {`${settingsObj?.length ? edtitle : subtitle} ${title} ${settingsObj?.length > 0 && `(${settingsObj?.length})`}`}
+                    {`${settingsObj?.length ? edtitle : subtitle} ${title} ${settingsObj?.length > 0 ? `(${settingsObj?.length})` : ''}`}
                 </Button>
                 {!ISOpen ? null : isLoading ? (
                     <SkeletonBodyText />
