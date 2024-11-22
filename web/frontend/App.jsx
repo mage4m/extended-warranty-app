@@ -26,6 +26,14 @@ export default function App() {
                                     label: "Claims",
                                     destination: "/claims",
                                 },
+                                {
+                                    label: "Sold Warranties",
+                                    destination: "/sold-warranties",
+                                },
+                                {
+                                    label: "Analytics",
+                                    destination: "/analytics",
+                                },
                             ]}
                         />
                         <Routes pages={pages} />
