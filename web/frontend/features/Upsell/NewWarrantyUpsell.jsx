@@ -7,29 +7,21 @@ import {
     Select,
     FormLayout,
     Grid,
-    Card,
+    LegacyCard,
     LegacyStack,
 } from "@shopify/polaris";
-import { useState, useCallback } from "react";
-import ProductSelector from "../ProductSelector";
-import { UpsellPolicy, UpsellProducts } from "../../utils/api/resource";
-import { UpsellProducts_Delete } from "../../utils/api/delete";
-import { WarrantyClausesModal } from "./components";
+import React, { useState, useCallback } from "react";
 import { useApiMutation } from "../../hooks";
-import Swal from "sweetalert2";
 import { WarrantyCreate } from "../../utils/api/post";
+import { QualifyingProducts, WarrantyClausesModal } from "./components";
+import { useToast } from "../../providers/ToastProvider";
 
 const NewWarrantyUpsell = () => {
+    const { showToast } = useToast();
     const [loading, setLoading] = useState(false);
 
     //! Error State
-    const [error, setError] = useState({
-        policyName: "",
-        duration: "",
-        warrantyPrice: "",
-        warrantyClauses: "",
-        products: "",
-    });
+    const [error, setError] = useState({});
 
     const [warrantyUpsell, setWarrantyUpsell] = useState({
         typeOfUpSell: "Warranty",
@@ -41,12 +33,20 @@ const NewWarrantyUpsell = () => {
         products: [],
     });
 
+    const [warrantyModal, setWarrantyModal] = useState(false);
+
+    const [productPickerModal, setProductPickerModal] = useState(false);
+
+    const ProductPicker = useCallback(() => {
+        setProductPickerModal(!productPickerModal);
+    }, [productPickerModal]);
+
     const mutation = useApiMutation(WarrantyCreate, "POST", {
         onSuccess: (data) => {
-            Swal.fire({
-                icon: "success",
-                title: "Success",
-                text: data?.message,
+            showToast({
+                content: "Your Warranty has been sent successfully.",
+                tone: "magic",
+                duration: 2000,
             });
             setWarrantyUpsell({
                 typeOfUpSell: "Warranty",
@@ -61,10 +61,10 @@ const NewWarrantyUpsell = () => {
             // refetch();
         },
         onError: (error) => {
-            Swal.fire({
-                icon: "error",
-                title: "Error",
-                text: `Failed: ${error?.message}`,
+            showToast({
+                content: error?.message,
+                duration: 3000,
+                error: true,
             });
             setLoading(false);
         },
@@ -94,6 +94,7 @@ const NewWarrantyUpsell = () => {
         }));
     }, []);
 
+    //! Error Validation
     const validateFields = () => {
         const errors = {};
 
@@ -117,6 +118,8 @@ const NewWarrantyUpsell = () => {
         setError(errors);
         return Object.keys(errors).length === 0;
     };
+
+    //! Submit the Upsell
     const handleSubmit = useCallback(
         async (e) => {
             e.preventDefault();
@@ -136,22 +139,32 @@ const NewWarrantyUpsell = () => {
         { label: "Extended Warranty", value: "Extended Warranty" },
     ];
 
+    //! Waranty
+
+    const WarrantyModal = useCallback(() => {
+        setWarrantyModal(!warrantyModal);
+    }, [warrantyModal]);
+
     const setWarrantyClauses = (updatedClauses) => {
         setWarrantyUpsell((prev) => ({
             ...prev,
             warrantyClauses: updatedClauses,
         }));
+        setError((prev) => ({ ...prev, warrantyClauses: "" }));
     };
+
+    //! Products
     const setProducts = (updatedProducts) => {
         setWarrantyUpsell((prev) => ({
             ...prev,
             products: updatedProducts,
         }));
+        setError((prev) => ({ ...prev, products: "" }));
     };
 
     return (
         <Layout.Section>
-            <Card sectioned title="Create New Warranty Upsell">
+            <LegacyCard sectioned title="Create New Warranty Upsell">
                 <Form onSubmit={handleSubmit}>
                     <FormLayout>
                         <Text as="h2" variant="headingMd">
@@ -213,7 +226,7 @@ const NewWarrantyUpsell = () => {
                                 >
                                     <div className="d-flex duration-wrapper">
                                         <TextField
-                                        type="number"
+                                            type="number"
                                             label={`Duration (${warrantyUpsell?.daysOrYears})`}
                                             value={warrantyUpsell?.duration}
                                             onChange={handleInputChange(
@@ -293,22 +306,33 @@ const NewWarrantyUpsell = () => {
                                     xs: 6,
                                 }}
                             >
-                                <ProductSelector
-                                    size="large"
-                                    title="Qualifying Products"
-                                    subtitle="Select"
-                                    edtitle="Edit"
-                                    getUrl={UpsellProducts}
-                                    postUrl={UpsellProducts}
-                                    deleteUrl={UpsellProducts_Delete}
+                                <LegacyStack spacing="loose" vertical>
+                                    <Button
+                                        // loading={isSetLoading}
+                                        fullWidth
+                                        size="large"
+                                        onClick={ProductPicker}
+                                    >
+                                        {`${warrantyUpsell?.products?.length ? "Edit" : "Select"} Qualifying Products ${warrantyUpsell?.products?.length > 0 ? `(${warrantyUpsell?.products?.length})` : ""}`}
+                                    </Button>
+                                </LegacyStack>
+
+                                <QualifyingProducts
                                     ISOpen={false}
                                     selectedProducts={
                                         warrantyUpsell?.products || []
                                     }
                                     setSelectedProducts={setProducts}
+                                    ProductPicker={ProductPicker}
+                                    open={productPickerModal}
                                 />
                                 {error?.products && (
-                                    <p style={{ color: "red" }}>
+                                    <p
+                                        style={{
+                                            color: "red",
+                                            marginTop: "10px",
+                                        }}
+                                    >
                                         {error?.products}
                                     </p>
                                 )}
@@ -322,14 +346,28 @@ const NewWarrantyUpsell = () => {
                                     xs: 6,
                                 }}
                             >
+                                <Button
+                                    fullWidth
+                                    size="large"
+                                    onClick={WarrantyModal}
+                                >
+                                    {`Add Warranty Clauses${warrantyUpsell?.warrantyClauses?.length > 0 ? ` (${warrantyUpsell?.warrantyClauses?.length})` : ""}`}
+                                </Button>
                                 <WarrantyClausesModal
                                     warrantyClauses={
                                         warrantyUpsell?.warrantyClauses || []
                                     }
                                     setWarrantyClauses={setWarrantyClauses}
+                                    WarrantyModal={WarrantyModal}
+                                    open={warrantyModal}
                                 />
                                 {error?.warrantyClauses && (
-                                    <p style={{ color: "red" }}>
+                                    <p
+                                        style={{
+                                            color: "red",
+                                            marginTop: "10px",
+                                        }}
+                                    >
                                         {error?.warrantyClauses}
                                     </p>
                                 )}
@@ -349,7 +387,7 @@ const NewWarrantyUpsell = () => {
                         </LegacyStack>
                     </FormLayout>
                 </Form>
-            </Card>
+            </LegacyCard>
         </Layout.Section>
     );
 };

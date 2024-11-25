@@ -14,22 +14,26 @@ import { items } from "../utils/warrantyclauses";
 const WarrantyClausesModal = ({
     warrantyClauses,
     setWarrantyClauses,
+    WarrantyModal,
+    open = false,
 }) => {
-    const [open, setOpen] = useState(false);
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
     // const [warrantyClauses, setWarrantyClauses] = useState([]);
-
-    const handleOpen = useCallback(() => setOpen(true));
-    const handleClose = useCallback(() => setOpen(false));
 
     const handleAdd = useCallback(() => {
         if (value.trim() === "") {
             setError("Term cannot be empty");
             return;
         }
-        setWarrantyClauses([...warrantyClauses, value]);
+        //! If warrantyClauses already have that value
+        if (warrantyClauses.includes(value.trim())) {
+            setError("This clause already exists");
+            return;
+        }
+        setWarrantyClauses([...warrantyClauses, value.trim()]);
         setValue("");
+        setError("");
     }, [value, warrantyClauses, setWarrantyClauses]);
 
     const handleChange = useCallback((newValue) => {
@@ -55,14 +59,9 @@ const WarrantyClausesModal = ({
 
     return (
         <>
-            <Button fullWidth size="large" onClick={handleOpen}>
-                {`Add Warranty Clauses${warrantyClauses?.length > 0 ? ` (${warrantyClauses.length})` : ""}`}
-            </Button>
-
-
             <Modal
                 open={open}
-                onClose={handleClose}
+                onClose={WarrantyModal}
                 title="Add Warranty Clauses"
                 large
             >

@@ -1,11 +1,17 @@
-import { useQuery, useMutation, useQueryClient } from 'react-query';
+import { useQuery, useMutation, useQueryClient } from "react-query";
 import axios from "axios";
 import { getSessionToken } from "@shopify/app-bridge-utils";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import Swal from "sweetalert2";
-import { useDebugValue } from 'react';
+import { useDebugValue } from "react";
+import { useToast } from "../providers/ToastProvider";
 
-const fetchData = async (url, app, params = {}, method = 'GET', payload = null) => {
+const fetchData = async (
+    url,
+    app,
+    params = {},
+    method = "GET",
+    payload = null,
+) => {
     try {
         const token = await getSessionToken(app);
         const response = await axios({
@@ -20,51 +26,53 @@ const fetchData = async (url, app, params = {}, method = 'GET', payload = null) 
         });
         return response?.data;
     } catch (error) {
-        Swal.fire({
-            showConfirmButton: false,
-            timer: 1500,
-            icon: "error",
-            title: "Error on Request",
-            text: error?.message,
-            showClass: {
-                popup: `
-                    animate__animated
-                    animate__fadeInUp
-                    animate__faster
-                    `
-            },
-            hideClass: {
-                popup: `
-                    animate__animated
-                    animate__fadeOutDown
-                    animate__faster
-                    `
-            }
-        });
-        console.dir("Error in fetchData:", error);
+        console.table("Error in fetchData:", error);
         throw error;
     }
 };
 
-export const useApiRequest = (id, url, method = 'GET', params = {}, options = {}) => {
+export const useApiRequest = (
+    id,
+    url,
+    method = "GET",
+    params = {},
+    options = {},
+) => {
     const app = useAppBridge();
-    const fetch_data = () => fetchData(url, app, params, method);
+    const { showToast } = useToast();
 
-    const { data, isError, isLoading, error, refetch } = useQuery([id, params], fetch_data, {
-        staleTime: 2000,
-        refetchOnWindowFocus: false,
-        retry: 1,
-        retryDelay: 5000,
-        ...options,
-    });
+    const fetch_data = () => {
+        try {
+            fetchData(url, app, params, method);
+        } catch (error) {
+            showToast({
+                content: error?.message,
+                error: true,
+            });
+        }
+    };
 
-    useDebugValue(data ?? 'loading.....');
+    const { data, isError, isLoading, error, refetch } = useQuery(
+        [id, params],
+        fetch_data,
+        {
+            staleTime: 2000,
+            refetchOnWindowFocus: false,
+            retry: 1,
+            retryDelay: 5000,
+            ...options,
+        },
+    );
+
+    useDebugValue(data ?? "loading.....");
     return { data, isError, isLoading, error, refetch };
 };
 
-export const useApiMutation = (url, method = 'POST', options = {}) => {
+export const useApiMutation = (url, method = "POST", options = {}) => {
     const app = useAppBridge();
     const queryClient = useQueryClient();
+
+    const { showToast } = useToast();
 
     return useMutation(
         async (payload) => {
@@ -84,16 +92,12 @@ export const useApiMutation = (url, method = 'POST', options = {}) => {
                 if (options.onError) {
                     options.onError(error);
                 }
-                Swal.fire({
-                    position: "top-end",
-                    showConfirmButton: false,
-                    timer: 1500,
-                    icon: "error",
-                    title: "Mutation Error",
-                    text: error?.message,
+                showToast({
+                    content: error?.message,
+                    error: true,
                 });
             },
             ...options, // Additional mutation options can be passed in via options
-        }
+        },
     );
 };
