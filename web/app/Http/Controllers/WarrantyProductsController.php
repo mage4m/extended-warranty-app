@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Exceptions\ShopifyProductCreatorException;
 use App\Lib\WarrantyCreator;
+use App\Models\WarrantyProducts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -20,6 +22,24 @@ class WarrantyProductsController extends Controller
             $success = true;
             $code = 200;
             $error = null;
+
+            $warranty = new WarrantyProducts();
+            $warranty->warranty_id = $warrantyID['id'];
+            $warranty->warranty_variant_id = $warrantyID['variant_id'];
+            $warranty->name = $productParams['policyName'];
+            $warranty->type = $productParams['typeOfUpSell'];
+            $warranty->duration_number = $productParams['duration'];
+            $warranty->duration_unit = $productParams['daysOrYears'];
+            $warranty->price = $productParams['warrantyPrice'];
+            $warranty->clauses = !empty($productParams['warrantyClauses']) && is_array($productParams['warrantyClauses'])
+                ? implode(';', $productParams['warrantyClauses'])
+                : '';
+            $warranty->applicable_products = !empty($productParams['products']) && is_array($productParams['products'])
+                ? implode(';', array_column($productParams['products'], 'id'))
+                : '';
+            $warranty->status = 0;
+            $warranty->save();
+            $message = "Warranty created Successfully!";
         } catch (\Exception $e) {
             $success = false;
 
@@ -33,11 +53,10 @@ class WarrantyProductsController extends Controller
                 $code = 500;
                 $error = $e->getMessage();
             }
-
+            $message = false;
             Log::error("Failed to create products: $error");
-        }
-        finally {
-            return response()->json(["success" => $success, "error" => $error], $code);
+        } finally {
+            return response()->json(["success" => $success, "error" => $error, "message" => $message], $code);
         }
     }
 }
