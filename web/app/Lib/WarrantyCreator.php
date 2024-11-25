@@ -58,10 +58,9 @@ QUERY;
             ],
         );
         $body1 = HttpResponse::fromResponse($response1)->getDecodedBody();
-
         $product = [
-            'product_id' => $body1['data']['productCreate']['product']['id'],
-            'product_variant_id' => $body1['data']['productCreate']['product']['variants']['edges'][0]['node']['id']
+            'id' => $body1['data']['productCreate']['product']['id'],
+            'variant_id' => $body1['data']['productCreate']['product']['variants']['edges'][0]['node']['id']
         ];
 
         if ($response1->getStatusCode() !== 200 || isset($body["errors"])) {
@@ -71,16 +70,15 @@ QUERY;
             [
                 "query" => self::CREATE_PRODUCT_VARIANT_PRICE_MUTATION,
                 "variables" => [
-                    "productId" => $product['product_id'],
+                    "productId" => $product['id'],
                     "variants" => [
-                        "id" => $product['product_variant_id'],
+                        "id" => $product['variant_id'],
                         "price" => $productDetails['warrantyPrice'],
                     ]
                 ]
             ],
         );
         $body2 = HttpResponse::fromResponse($response2)->getDecodedBody();
-
         if ($response2->getStatusCode() !== 200 || isset($body2["errors"])) {
             throw new ShopifyProductCreatorException($response2->getBody()->__toString(), $response2);
         }
