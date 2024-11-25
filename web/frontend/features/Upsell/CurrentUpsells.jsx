@@ -1,3 +1,4 @@
+import React from "react";
 import {
     Badge,
     Button,
@@ -7,7 +8,6 @@ import {
     LegacyStack,
     Text,
 } from "@shopify/polaris";
-import React from "react";
 
 const CurrentUpsells = () => {
     const currentUpsells = [

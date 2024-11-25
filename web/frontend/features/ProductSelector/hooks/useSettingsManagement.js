@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { getSessionToken } from "@shopify/app-bridge-utils";
 import { useAppBridge } from "@shopify/app-bridge-react";
-import Swal from "sweetalert2";
+// import Swal from "sweetalert2";
 export const useSettingsManagement = (getUrl, postUrl, deleteUrl) => {
     const app = useAppBridge();
     const [isLoading, setIsLoading] = useState(false);
@@ -23,11 +23,11 @@ export const useSettingsManagement = (getUrl, postUrl, deleteUrl) => {
             setSettingsObj(response?.data);
         } catch (err) {
             setError(err?.message);
-            Swal.fire({
-                icon: "error",
-                title: err,
-                text: err,
-            });
+            // Swal.fire({
+            //     icon: "error",
+            //     title: err,
+            //     text: err,
+            // });
         } finally {
             setIsLoading(false);
         }
@@ -87,12 +87,12 @@ export const useSettingsManagement = (getUrl, postUrl, deleteUrl) => {
                 },
             );
             setSettingsObj(response?.data?.products);
-            Swal.fire({
-                icon: "success",
-                text: response?.data?.message,
-                showConfirmButton: false,
-                timer: 1500,
-            });
+            // Swal.fire({
+            //     icon: "success",
+            //     text: response?.data?.message,
+            //     showConfirmButton: false,
+            //     timer: 1500,
+            // });
             // return response?.data?.products;
         } catch (err) {
             setError(err?.message);

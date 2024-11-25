@@ -5,7 +5,7 @@ import Routes from "./Routes";
 import "./assets/scss/index.scss";
 
 
-import { AppBridgeProvider, QueryProvider, PolarisProvider } from "./providers";
+import { AppBridgeProvider, QueryProvider, PolarisProvider, ToastProvider } from "./providers";
 
 export default function App() {
     // Any .tsx or .jsx files in /pages will become a route
@@ -19,25 +19,27 @@ export default function App() {
         <PolarisProvider>
             <BrowserRouter>
                 <AppBridgeProvider>
-                    <QueryProvider>
-                        <NavigationMenu
-                            navigationLinks={[
-                                {
-                                    label: "Claims",
-                                    destination: "/claims",
-                                },
-                                {
-                                    label: "Sold Warranties",
-                                    destination: "/sold-warranties",
-                                },
-                                {
-                                    label: "Analytics",
-                                    destination: "/analytics",
-                                },
-                            ]}
-                        />
-                        <Routes pages={pages} />
-                    </QueryProvider>
+                    <ToastProvider>
+                        <QueryProvider>
+                            <NavigationMenu
+                                navigationLinks={[
+                                    {
+                                        label: "Claims",
+                                        destination: "/claims",
+                                    },
+                                    {
+                                        label: "Sold Warranties",
+                                        destination: "/sold-warranties",
+                                    },
+                                    {
+                                        label: "Analytics",
+                                        destination: "/analytics",
+                                    },
+                                ]}
+                            />
+                            <Routes pages={pages} />
+                        </QueryProvider>
+                    </ToastProvider>
                 </AppBridgeProvider>
             </BrowserRouter>
         </PolarisProvider>
