@@ -10,7 +10,6 @@ import {
     Scrollable,
     SkeletonBodyText,
     Tooltip,
-    Stack,
     LegacyStack,
 } from "@shopify/polaris";
 import { ResourcePicker } from "@shopify/app-bridge-react";
