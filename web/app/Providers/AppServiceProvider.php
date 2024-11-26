@@ -7,6 +7,7 @@ use App\Lib\Handlers\AppUninstalled;
 use App\Lib\Handlers\Privacy\CustomersDataRequest;
 use App\Lib\Handlers\Privacy\CustomersRedact;
 use App\Lib\Handlers\Privacy\ShopRedact;
+use App\Lib\Handlers\ProductDeleted;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\URL;
 use Shopify\Context;
@@ -56,6 +57,7 @@ class AppServiceProvider extends ServiceProvider
         URL::forceScheme('https');
 
         Registry::addHandler(Topics::APP_UNINSTALLED, new AppUninstalled());
+        Registry::addHandler(Topics::PRODUCTS_DELETE, new ProductDeleted());
 
         /*
          * This sets up the mandatory privacy webhooks. You’ll need to fill in the endpoint to be used by your app in

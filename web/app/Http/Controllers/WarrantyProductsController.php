@@ -3,10 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Exceptions\ShopifyProductCreatorException;
+use App\Lib\CollectionCreator;
 use App\Lib\WarrantyCreator;
 use App\Models\WarrantyProducts;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Shopify\Rest\Admin2022_04\Collect;
 
 class WarrantyProductsController extends Controller
 {
@@ -32,16 +34,20 @@ class WarrantyProductsController extends Controller
         $session = $request->get('shopifySession'); // Provided by the shopify.auth middleware, guaranteed to be active
         $productParams = $request->get('warrantyUpsell');
         $success = $code = $error = null;
-        $warrantyID = '';
+        $warrantyIds = '';
+        $message = '';
         try {
-            $warrantyID = WarrantyCreator::call($session, $productParams);
+            $warrantyIds = WarrantyCreator::call($session, $productParams);
+            $collectionID = CollectionCreator::call($session, $warrantyIds['id']);
             $success = true;
             $code = 200;
             $error = null;
 
             $warranty = new WarrantyProducts();
-            $warranty->warranty_id = $warrantyID['id'];
-            $warranty->warranty_variant_id = $warrantyID['variant_id'];
+            $warranty->shop = $session->getshop();
+            $warranty->warranty_id = $warrantyIds['id'];
+            $warranty->warranty_variant_id = $warrantyIds['variant_id'];
+            $warranty->collection_id = $collectionID;
             $warranty->name = $productParams['policyName'];
             $warranty->type = $productParams['typeOfUpSell'];
             $warranty->duration_number = $productParams['duration'];
@@ -54,7 +60,8 @@ class WarrantyProductsController extends Controller
             $warranty->applicable_products = !empty($productParams['products']) && is_array($productParams['products'])
                 ? json_encode($productParams['products'])
                 : json_encode([]);
-            $warranty->status = 0;
+ 
+            $warranty->status = 'disabled';
             $warranty->save();
             $message = "Warranty created Successfully!";
         } catch (\Exception $e) {
