@@ -25,9 +25,8 @@ class CreateWarrantyProductsTable extends Migration
             $table->string('duration_number');
             $table->string('duration_unit');
             $table->string('price');
-            $table->string('clauses');
-            $table->string('applicable_products')->nullable();
-            $table->enum('status', ['disabled','enabled','recreate'])->default('disabled');
+            $table->json('clauses')->nullable();
+            $table->json('applicable_products')->nullable();
             $table->timestamps();
         });
     }
