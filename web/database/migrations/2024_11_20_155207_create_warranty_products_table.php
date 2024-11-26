@@ -11,12 +11,15 @@ class CreateWarrantyProductsTable extends Migration
      *
      * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('warranty_products', function (Blueprint $table) {
             $table->id();
+            $table->text('shop');
             $table->string('warranty_id');
             $table->string('warranty_variant_id');
+            $table->unsignedBigInteger('collection_id');
+            $table->foreign('collection_id')->references('id')->on('warranty_collections');
             $table->string('name');
             $table->string('type');
             $table->string('duration_number');
@@ -24,7 +27,7 @@ class CreateWarrantyProductsTable extends Migration
             $table->string('price');
             $table->string('clauses');
             $table->string('applicable_products')->nullable();
-            $table->boolean('status')->default(false);
+            $table->enum('status', ['disabled','enabled','recreate'])->default('disabled');
             $table->timestamps();
         });
     }
@@ -34,7 +37,7 @@ class CreateWarrantyProductsTable extends Migration
      *
      * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('warranty_products');
     }
