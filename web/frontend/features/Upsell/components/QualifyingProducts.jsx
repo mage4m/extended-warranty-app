@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback, useState } from "react";
 import {
     ButtonGroup,
     Thumbnail,
@@ -11,6 +11,10 @@ import {
     LegacyStack,
 } from "@shopify/polaris";
 import { ResourcePicker } from "@shopify/app-bridge-react";
+import { useToast } from "../../../providers/ToastProvider";
+import { WarrantyProductsUpdate } from "../../../utils/api/put";
+import { useApiMutation } from "../../../hooks";
+import { useUpsell } from "../providers/UpsellProvider";
 // import { XIcon } from "@shopify/polaris-icons";
 
 const QualifyingProducts = ({
@@ -19,12 +23,45 @@ const QualifyingProducts = ({
     setSelectedProducts,
     ProductPicker,
     open = false,
+    id,
+    updatedProducts = false,
 }) => {
+    const { refetch } = useUpsell();
     // const [selectedProducts, setSelectedProducts] = useState([]);
+    //! Save the Products in Edit
+    const { showToast } = useToast();
+    const mutation = useApiMutation(WarrantyProductsUpdate, "PUT", {
+        onSuccess: (data) => {
+            if (data?.success === true) {
+                showToast({
+                    content: data?.message,
+                    tone: "magic",
+                    duration: 2000,
+                });
+                refetch();
+                ProductPicker();
+            }
+        },
+        onError: (error) => {
+            showToast({
+                content: error?.message,
+                duration: 3000,
+                error,
+            });
+        },
+    });
+
     const handleSelectProduct = async ({ selection }) => {
         const newSettings = selection?.map((product) => ({ id: product?.id }));
+        console.log(newSettings);
+
         setSelectedProducts(newSettings);
         ProductPicker();
+    };
+
+    const handleUpdateProduct = async ({ selection }) => {
+        const newSettings = selection?.map((product) => ({ id: product?.id }));
+        await mutation.mutateAsync({ id, products: newSettings });
     };
 
     const handleDelete = async (valueID) => {
@@ -33,6 +70,8 @@ const QualifyingProducts = ({
         );
         setSelectedProducts(updatedSettings);
     };
+
+    console.log("chnage", selectedProducts);
 
     return (
         <>
@@ -164,7 +203,11 @@ const QualifyingProducts = ({
                 showVariants={false}
                 open={open}
                 onCancel={ProductPicker}
-                onSelection={handleSelectProduct}
+                onSelection={
+                    updatedProducts === true
+                        ? handleUpdateProduct
+                        : handleSelectProduct
+                }
                 selectMultiple={true}
                 actionVerb="select"
                 initialSelectionIds={selectedProducts}

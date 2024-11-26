@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUpsellsTable extends Migration
+class CreateWarrantyCollectionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateUpsellsTable extends Migration
      */
     public function up()
     {
-        Schema::create('upsells', function (Blueprint $table) {
+        Schema::create('warranty_collections', function (Blueprint $table) {
             $table->id();
+            $table->text('shop');
+            $table->string('collection_id');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateUpsellsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('upsells');
+        Schema::dropIfExists('warranty_collections');
     }
 }

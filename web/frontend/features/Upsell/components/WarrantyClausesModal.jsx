@@ -11,12 +11,19 @@ import {
     List,
 } from "@shopify/polaris";
 import { items } from "../utils/warrantyclauses";
+import { useApiMutation } from "../../../hooks";
+import { useToast } from "../../../providers/ToastProvider";
+import { WarrantyClausesUpdate } from "../../../utils/api/put";
+import { useUpsell } from "../providers/UpsellProvider";
 const WarrantyClausesModal = ({
     warrantyClauses,
     setWarrantyClauses,
     WarrantyModal,
     open = false,
+    updatedClauses = false,
+    id,
 }) => {
+    const { refetch } = useUpsell();
     const [value, setValue] = useState("");
     const [error, setError] = useState("");
     // const [warrantyClauses, setWarrantyClauses] = useState([]);
@@ -54,8 +61,42 @@ const WarrantyClausesModal = ({
         },
         [warrantyClauses, setWarrantyClauses],
     );
-
     const [selectedItems, setSelectedItems] = useState([]);
+
+    //! Save the Clauses in Edit
+    const { showToast } = useToast();
+    const [loading, setLoading] = useState(false);
+    const mutation = useApiMutation(WarrantyClausesUpdate, "PUT", {
+        onSuccess: (data) => {
+            if (data?.success === true) {
+                showToast({
+                    content: data?.message,
+                    tone: "magic",
+                    duration: 2000,
+                });
+                setLoading(false);
+                refetch();
+                WarrantyModal();
+            }
+        },
+        onError: (error) => {
+            showToast({
+                content: error?.message,
+                duration: 3000,
+                error: true,
+            });
+            setLoading(false);
+        },
+    });
+
+    const handleClauses = useCallback(
+        async (e) => {
+            e.preventDefault();
+            setLoading(true);
+            await mutation.mutateAsync({ id, clauses: warrantyClauses });
+        },
+        [id, warrantyClauses, mutation],
+    );
 
     return (
         <>
@@ -147,6 +188,23 @@ const WarrantyClausesModal = ({
                                     </List.Item>
                                 ))}
                         </List>
+                    </Modal.Section>
+                )}
+
+                {updatedClauses === true && (
+                    <Modal.Section>
+                        <LegacyStack
+                            alignment="trailing"
+                            distribution="trailing"
+                        >
+                            <Button
+                                primary
+                                loading={loading}
+                                onClick={handleClauses}
+                            >
+                                Save Clauses
+                            </Button>
+                        </LegacyStack>
                     </Modal.Section>
                 )}
 

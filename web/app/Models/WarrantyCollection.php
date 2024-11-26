@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\API;
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Upsell extends Model
+class WarrantyCollection extends Model
 {
     use HasFactory;
 }

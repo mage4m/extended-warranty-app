@@ -1,10 +1,10 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
-client_id = "eb0df5d8312c4ad1ac364d9ff72111e8"
-application_url = "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com"
+client_id = "613fb85300cbed6a8a058d7d96294a70"
+application_url = "https://fresh-recordings-heater-done.trycloudflare.com"
 embedded = true
-name = "AppWaranty"
-handle = "appwaranty"
+name = "WarrantyApp"
+handle = "warrantyapp"
 
 [build]
 include_config_on_deploy = true
@@ -20,9 +20,9 @@ scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/auth/callback",
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/auth/shopify/callback",
-  "https://zambia-evaluations-luxembourg-outputs.trycloudflare.com/api/auth/callback"
+  "https://fresh-recordings-heater-done.trycloudflare.com/auth/callback",
+  "https://fresh-recordings-heater-done.trycloudflare.com/auth/shopify/callback",
+  "https://fresh-recordings-heater-done.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

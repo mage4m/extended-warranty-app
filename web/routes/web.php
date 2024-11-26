@@ -74,6 +74,16 @@ Route::get('/api/auth/callback', function (Request $request) {
         );
     }
 
+    $response = Registry::register('/api/webhooks', Topics::PRODUCTS_DELETE, $shop, $session->getAccessToken());
+    if ($response->isSuccess()) {
+        Log::debug("Registered PRODUCTS_DELETE webhook for shop $shop");
+    } else {
+        Log::error(
+            "Failed to register PRODUCTS_DELETE webhook for shop $shop with response body: " .
+            print_r($response->getBody(), true)
+        );
+    }
+
     $redirectUrl = Utils::getEmbeddedAppUrl($host);
     if (Config::get('shopify.billing.required')) {
         list($hasPayment, $confirmationUrl) = EnsureBilling::check($session, Config::get('shopify.billing'));
