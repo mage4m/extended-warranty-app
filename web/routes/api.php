@@ -1,9 +1,7 @@
 <?php
 
-use App\Models\WarrantyProducts;
 use App\Http\Controllers\API\{
     UpsellProductSelectorController,
-    UpsellController
 };
 use App\Http\Controllers\WarrantyProductsController;
 
@@ -25,14 +23,17 @@ Route::get('/', function () {
 /* Wrapping up the routes in middleware to get Shopify session */
 Route::middleware(['shopify.auth'])->group(function () {
 
-    // warranty routes
-    Route::post('/warranty/create', [WarrantyProductsController::class, 'createWarrantyProduct']);
-    Route::get('/warranty/get', function () {
-        $allWarranties = WarrantyProducts::all();
-        return response()->json($allWarranties);
+    //! warranty routes
+    Route::group(['prefix' => 'warranty'], function () {
+        Route::get('/get', [WarrantyProductsController::class, 'index']);
+        Route::post('/create', [WarrantyProductsController::class, 'createWarrantyProduct']);
+        //! Update the Clauses
+        Route::put('/clauses/update', [WarrantyProductsController::class, 'UpdateClauses']);
+        //! Update the Products
+        Route::put('/products/update', [WarrantyProductsController::class, 'UpdateProducts']);
     });
-    //! For Upsell
-    Route::resource('upsell-policy', UpsellController::class);
+
+
 
     //! For Upsell Products
     Route::resource('upsell_products', UpsellProductSelectorController::class);

@@ -15,10 +15,14 @@ import { useApiMutation } from "../../hooks";
 import { WarrantyCreate } from "../../utils/api/post";
 import { QualifyingProducts, WarrantyClausesModal } from "./components";
 import { useToast } from "../../providers/ToastProvider";
+import { useModal } from "./providers/ModalProvider";
+import { useUpsell } from "./providers/UpsellProvider";
 
 const NewWarrantyUpsell = () => {
     const { showToast } = useToast();
     const [loading, setLoading] = useState(false);
+    const { modals, toggleModal } = useModal();
+    const { refetch } = useUpsell();
 
     //! Error State
     const [error, setError] = useState({});
@@ -33,32 +37,26 @@ const NewWarrantyUpsell = () => {
         products: [],
     });
 
-    const [warrantyModal, setWarrantyModal] = useState(false);
-
-    const [productPickerModal, setProductPickerModal] = useState(false);
-
-    const ProductPicker = useCallback(() => {
-        setProductPickerModal(!productPickerModal);
-    }, [productPickerModal]);
-
     const mutation = useApiMutation(WarrantyCreate, "POST", {
         onSuccess: (data) => {
-            showToast({
-                content: "Your Warranty has been sent successfully.",
-                tone: "magic",
-                duration: 2000,
-            });
-            setWarrantyUpsell({
-                typeOfUpSell: "Warranty",
-                policyName: "",
-                duration: "",
-                daysOrYears: "Days",
-                warrantyPrice: "",
-                warrantyClauses: [],
-                products: [],
-            });
-            setLoading(false);
-            // refetch();
+            if (data?.success === true) {
+                showToast({
+                    content: data?.message,
+                    tone: "magic",
+                    duration: 4000,
+                });
+                setWarrantyUpsell({
+                    typeOfUpSell: "Warranty",
+                    policyName: "",
+                    duration: "",
+                    daysOrYears: "Days",
+                    warrantyPrice: "",
+                    warrantyClauses: [],
+                    products: [],
+                });
+                setLoading(false);
+                refetch();
+            }
         },
         onError: (error) => {
             showToast({
@@ -124,14 +122,10 @@ const NewWarrantyUpsell = () => {
         async (e) => {
             e.preventDefault();
             if (!validateFields()) return;
-
             setLoading(true);
-            console.log("====================================");
-            console.log(warrantyUpsell);
-            console.log("====================================");
             await mutation.mutateAsync({ warrantyUpsell });
         },
-        [warrantyUpsell],
+        [warrantyUpsell, mutation],
     );
 
     const options = [
@@ -140,11 +134,6 @@ const NewWarrantyUpsell = () => {
     ];
 
     //! Waranty
-
-    const WarrantyModal = useCallback(() => {
-        setWarrantyModal(!warrantyModal);
-    }, [warrantyModal]);
-
     const setWarrantyClauses = (updatedClauses) => {
         setWarrantyUpsell((prev) => ({
             ...prev,
@@ -311,21 +300,28 @@ const NewWarrantyUpsell = () => {
                                         // loading={isSetLoading}
                                         fullWidth
                                         size="large"
-                                        onClick={ProductPicker}
+                                        onClick={() =>
+                                            toggleModal("productPickerModal")
+                                        }
+                                        // onClick={ProductPicker}
                                     >
                                         {`${warrantyUpsell?.products?.length ? "Edit" : "Select"} Qualifying Products ${warrantyUpsell?.products?.length > 0 ? `(${warrantyUpsell?.products?.length})` : ""}`}
                                     </Button>
                                 </LegacyStack>
 
-                                <QualifyingProducts
-                                    ISOpen={false}
-                                    selectedProducts={
-                                        warrantyUpsell?.products || []
-                                    }
-                                    setSelectedProducts={setProducts}
-                                    ProductPicker={ProductPicker}
-                                    open={productPickerModal}
-                                />
+                                {modals?.productPickerModal && (
+                                    <QualifyingProducts
+                                        ISOpen={false}
+                                        selectedProducts={
+                                            warrantyUpsell?.products || []
+                                        }
+                                        setSelectedProducts={setProducts}
+                                        ProductPicker={() =>
+                                            toggleModal("productPickerModal")
+                                        }
+                                        open={modals?.productPickerModal}
+                                    />
+                                )}
                                 {error?.products && (
                                     <p
                                         style={{
@@ -349,18 +345,23 @@ const NewWarrantyUpsell = () => {
                                 <Button
                                     fullWidth
                                     size="large"
-                                    onClick={WarrantyModal}
+                                    onClick={() => toggleModal("warrantyModal")}
                                 >
                                     {`Add Warranty Clauses${warrantyUpsell?.warrantyClauses?.length > 0 ? ` (${warrantyUpsell?.warrantyClauses?.length})` : ""}`}
                                 </Button>
-                                <WarrantyClausesModal
-                                    warrantyClauses={
-                                        warrantyUpsell?.warrantyClauses || []
-                                    }
-                                    setWarrantyClauses={setWarrantyClauses}
-                                    WarrantyModal={WarrantyModal}
-                                    open={warrantyModal}
-                                />
+                                {modals?.warrantyModal && (
+                                    <WarrantyClausesModal
+                                        warrantyClauses={
+                                            warrantyUpsell?.warrantyClauses ||
+                                            []
+                                        }
+                                        setWarrantyClauses={setWarrantyClauses}
+                                        WarrantyModal={() =>
+                                            toggleModal("warrantyModal")
+                                        }
+                                        open={modals?.warrantyModal}
+                                    />
+                                )}
                                 {error?.warrantyClauses && (
                                     <p
                                         style={{

@@ -41,16 +41,18 @@ export const useApiRequest = (
     const app = useAppBridge();
     const { showToast } = useToast();
 
-    const fetch_data = () => {
-        try {
-            fetchData(url, app, params, method);
-        } catch (error) {
-            showToast({
-                content: error?.message,
-                error: true,
-            });
-        }
-    };
+const fetch_data = async () => {
+    try {
+        return await fetchData(url, app, params, method);
+    } catch (error) {
+        showToast({
+            content: error?.message,
+            error,
+        });
+    }
+};
+
+    // const fetch_data = () => fetchData(url, app, params, method);
 
     const { data, isError, isLoading, error, refetch } = useQuery(
         [id, params],
