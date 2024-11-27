@@ -26,3 +26,4 @@ package-lock.json
 .shopify/*
 .shopify.lock
 shopify.app.toml
+shopify.app.extended-warranty-app.toml

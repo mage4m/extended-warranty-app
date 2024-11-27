@@ -90,7 +90,13 @@ class WarrantyProductsController extends Controller
             $shop = $session->getShop();
             $warrantyId = $request->id;
             $warrantyClauses = $request->clauses;
-            WarrantyProducts::where('warranty_id', $warrantyId)->update(['clauses' => $warrantyClauses]);
+            $check = WarrantyProducts::where('shop', $shop)->exists();
+            if ($check) {
+                WarrantyProducts::where([
+                'shop' => $shop,
+                'warranty_id' => $warrantyId,
+                ])->update(['clauses' => $warrantyClauses]);
+            }
 
             return response()->json(['success' => true, 'message' => 'Clauses updated successfully']);
         } catch (\Exception $err) {
@@ -106,7 +112,13 @@ class WarrantyProductsController extends Controller
             $shop = $session->getShop();
             $warrantyId = $request->id;
             $warrantypProducts = $request->products;
-            WarrantyProducts::where('warranty_id', $warrantyId)->update(['applicable_products' => $warrantypProducts]);
+            $check = WarrantyProducts::where('shop', $shop)->exists();
+            if ($check) {
+                WarrantyProducts::where([
+                'shop' => $shop,
+                'warranty_id' => $warrantyId,
+                ])->update(['applicable_products' => $warrantypProducts]);
+            }
 
             return response()->json(['success' => true, 'message' => 'Products updated successfully']);
         } catch (\Exception $err) {
@@ -114,7 +126,6 @@ class WarrantyProductsController extends Controller
             return response()->json(['error' => 'Failed to update products'], 500);
         }
     }
-
     public function warrantyProductRecreate(Request $request)
     {
         /** @var AuthSession */
