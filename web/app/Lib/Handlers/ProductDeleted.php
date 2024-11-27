@@ -15,6 +15,9 @@ class ProductDeleted implements Handler
     {
         $product_url = "gid://shopify/Product/";
         $product_id = $product_url . $body['id'];
-        WarrantyProducts::query()->where('warranty_id', $product_id)->update(['status' => 'recreate']);
+        WarrantyProducts::query()->where([
+            'warranty_id' => $product_id,
+            'shop' => $shop
+        ])->update(['status' => 'recreate']);
     }
 }
