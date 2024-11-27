@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "613fb85300cbed6a8a058d7d96294a70"
-application_url = "https://fresh-recordings-heater-done.trycloudflare.com"
+application_url = "https://sept-camping-removal-brazilian.trycloudflare.com"
 embedded = true
 name = "WarrantyApp"
 handle = "warrantyapp"
@@ -20,9 +20,9 @@ scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://fresh-recordings-heater-done.trycloudflare.com/auth/callback",
-  "https://fresh-recordings-heater-done.trycloudflare.com/auth/shopify/callback",
-  "https://fresh-recordings-heater-done.trycloudflare.com/api/auth/callback"
+  "https://sept-camping-removal-brazilian.trycloudflare.com/auth/callback",
+  "https://sept-camping-removal-brazilian.trycloudflare.com/auth/shopify/callback",
+  "https://sept-camping-removal-brazilian.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]

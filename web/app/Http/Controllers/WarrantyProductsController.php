@@ -60,7 +60,7 @@ class WarrantyProductsController extends Controller
             $warranty->applicable_products = !empty($productParams['products']) && is_array($productParams['products'])
                 ? json_encode($productParams['products'])
                 : json_encode([]);
- 
+
             $warranty->status = 'disabled';
             $warranty->save();
             $message = "Warranty created Successfully!";
@@ -91,7 +91,13 @@ class WarrantyProductsController extends Controller
             $shop = $session->getShop();
             $warrantyId = $request->id;
             $warrantyClauses = $request->clauses;
-            WarrantyProducts::where('warranty_id', $warrantyId)->update(['clauses' => $warrantyClauses]);
+            $check = WarrantyProducts::where('shop', $shop)->exists();
+            if ($check) {
+                WarrantyProducts::where([
+                'shop' => $shop,
+                'warranty_id' => $warrantyId,
+            ])->update(['clauses' => $warrantyClauses]);
+            }
 
             return response()->json(['success' => true, 'message' => 'Clauses updated successfully']);
         } catch (\Exception $err) {
@@ -107,7 +113,13 @@ class WarrantyProductsController extends Controller
             $shop = $session->getShop();
             $warrantyId = $request->id;
             $warrantypProducts = $request->products;
-            WarrantyProducts::where('warranty_id', $warrantyId)->update(['applicable_products' => $warrantypProducts]);
+            $check = WarrantyProducts::where('shop', $shop)->exists();
+            if ($check) {
+                WarrantyProducts::where([
+                'shop' => $shop,
+                'warranty_id' => $warrantyId,
+            ])->update(['applicable_products' => $warrantypProducts]);
+            }
 
             return response()->json(['success' => true, 'message' => 'Products updated successfully']);
         } catch (\Exception $err) {
