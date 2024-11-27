@@ -12,7 +12,6 @@ use Shopify\Rest\Admin2022_04\Collect;
 
 class WarrantyProductsController extends Controller
 {
-
     public function index()
     {
         try {
@@ -60,7 +59,7 @@ class WarrantyProductsController extends Controller
             $warranty->applicable_products = !empty($productParams['products']) && is_array($productParams['products'])
                 ? json_encode($productParams['products'])
                 : json_encode([]);
- 
+
             $warranty->status = 'disabled';
             $warranty->save();
             $message = "Warranty created Successfully!";
@@ -84,7 +83,7 @@ class WarrantyProductsController extends Controller
         }
     }
 
-    public function UpdateClauses(Request $request)
+    public function updateClauses(Request $request)
     {
         try {
             $session = $request->get('shopifySession');
@@ -100,7 +99,7 @@ class WarrantyProductsController extends Controller
         }
     }
 
-    public function UpdateProducts(Request $request)
+    public function updateProducts(Request $request)
     {
         try {
             $session = $request->get('shopifySession');
@@ -113,6 +112,63 @@ class WarrantyProductsController extends Controller
         } catch (\Exception $err) {
             Log::error("Failed to update products to database: " . $err->getMessage());
             return response()->json(['error' => 'Failed to update products'], 500);
+        }
+    }
+
+    public function warrantyProductRecreate(Request $request)
+    {
+        /** @var AuthSession */
+        $session = $request->get('shopifySession'); // Provided by the shopify.auth middleware, guaranteed to be active
+        $deletedWarrantyID = "gid://shopify/Product/10173894852881"; // will be replaced with the correct warranty product id
+        $warranty = WarrantyProducts::query()->where([
+            'warranty_id' => $deletedWarrantyID,
+            'shop' => $session->getShop()
+        ]);
+        if ($warranty->exists()) {
+            $warrantyObject = $warranty->first();
+            $warrantyDetails = [
+                'policyName' => $warrantyObject->name,
+                'typeOfUpSell' => $warrantyObject->type,
+                'warrantyPrice' => $warrantyObject->price
+            ];
+            $success = $code = $error = null;
+            $warrantyIds = '';
+            $collectionID = '';
+            $message = '';
+            try {
+                $warrantyIds = WarrantyCreator::call($session, $warrantyDetails);
+                $collectionID = CollectionCreator::call($session, $warrantyIds['id']);
+                $success = true;
+                $code = 200;
+                $error = null;
+                $warrantyObject->warranty_id = $warrantyIds['id'];
+                $warrantyObject->warranty_variant_id = $warrantyIds['variant_id'];
+                $warrantyObject->collection_id = $collectionID;
+                $warrantyObject->status = 'disabled';
+                $warrantyObject->save();
+
+                $message = "Warranty created Successfully!";
+            } catch (\Exception $e) {
+                $success = false;
+
+                if ($e instanceof ShopifyProductCreatorException) {
+                    $code = $e->response->getStatusCode();
+                    $error = $e->response->getDecodedBody();
+                    if (array_key_exists("errors", $error)) {
+                        $error = $error["errors"];
+                    }
+                } else {
+                    $code = 500;
+                    $error = $e->getMessage();
+                }
+                $message = false;
+                Log::error("Failed to create products: $error");
+            } finally {
+                return response()->json(["success" => $success, "error" => $error, "message" => $message], $code);
+            }
+        } else {
+            return response()->json(["error" => true,
+                "message" => "Warranty Data not found! Please create a new Warranty"], 404);
         }
     }
 }

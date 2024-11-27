@@ -26,11 +26,14 @@ Route::middleware(['shopify.auth'])->group(function () {
     //! warranty routes
     Route::group(['prefix' => 'warranty'], function () {
         Route::get('/get', [WarrantyProductsController::class, 'index']);
+
         Route::post('/create', [WarrantyProductsController::class, 'createWarrantyProduct']);
+
+        Route::post('/recreate', [WarrantyProductsController::class, 'warrantyProductRecreate']);
         //! Update the Clauses
-        Route::put('/clauses/update', [WarrantyProductsController::class, 'UpdateClauses']);
+        Route::put('/clauses/update', [WarrantyProductsController::class, 'updateClauses']);
         //! Update the Products
-        Route::put('/products/update', [WarrantyProductsController::class, 'UpdateProducts']);
+        Route::put('/products/update', [WarrantyProductsController::class, 'updateProducts']);
     });
     //! For Upsell Products
     Route::resource('upsell_products', UpsellProductSelectorController::class);
