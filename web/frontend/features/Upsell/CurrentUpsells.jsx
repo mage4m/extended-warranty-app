@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
     Badge,
     Banner,
@@ -12,13 +12,17 @@ import {
 import { useModal } from "./providers/ModalProvider";
 import { QualifyingProducts, WarrantyClausesModal } from "./components";
 import { useUpsell } from "./providers/UpsellProvider";
+import { useApiMutation } from "../../hooks";
+import { useToast } from "../../providers/ToastProvider";
+import { WarrantyRecreate } from "../../utils/api/post";
 
 const CurrentUpsells = () => {
-    const { Warranty } = useUpsell();
+    const { Warranty, refetch } = useUpsell();
     const { modals, toggleModal } = useModal();
     const [selectedClauses, setSelectedClauses] = useState([]);
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [warranty_id, setWarranty_id] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // const currentUpsells = Warranty?.filter(
     //     (item) => item?.status === "enabled" || item?.status === "disabled",
@@ -108,6 +112,37 @@ const CurrentUpsells = () => {
     //      </Button>,
     //  ]);
 
+    const { showToast } = useToast();
+
+    const mutation = useApiMutation(WarrantyRecreate, "POST", {
+        onSuccess: (data) => {
+            if (data?.success === true) {
+                showToast({
+                    content: data?.message,
+                    tone: "magic",
+                    duration: 4000,
+                });
+                setLoading(false);
+                refetch();
+            }
+        },
+        onError: (error) => {
+            showToast({
+                content: error?.message,
+                duration: 3000,
+                error: true,
+            });
+            setLoading(false);
+        },
+    });
+
+    const RecreateProduct = useCallback(
+        async (WarrantyID) => {
+            setLoading(true);
+            await mutation.mutateAsync({ id: WarrantyID });
+        },
+        [],
+    );
     /***
      * !reduce accepts function: () =>{}, initial state : [] || {}
      * aggregate : intial state
@@ -166,9 +201,17 @@ const CurrentUpsells = () => {
     }, []);
 
     const deletedUpsells = Warranty?.reduce((aggregate, item) => {
+        console.log(item?.warranty_id);
+
         if (item?.status === "recreate") {
             aggregate?.push([
-                <Button size="slim" onClick={() => alert("taha")}>
+                <Button
+                    size="slim"
+                    loading={loading}
+                    onClick={() => {
+                        RecreateProduct(item?.warranty_id);
+                    }}
+                >
                     Recreate
                 </Button>,
                 item?.name,
