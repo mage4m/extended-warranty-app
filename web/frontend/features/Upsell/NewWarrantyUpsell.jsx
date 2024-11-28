@@ -297,13 +297,11 @@ const NewWarrantyUpsell = () => {
                             >
                                 <LegacyStack spacing="loose" vertical>
                                     <Button
-                                        // loading={isSetLoading}
                                         fullWidth
                                         size="large"
                                         onClick={() =>
                                             toggleModal("productPickerModal")
                                         }
-                                        // onClick={ProductPicker}
                                     >
                                         {`${warrantyUpsell?.products?.length ? "Edit" : "Select"} Qualifying Products ${warrantyUpsell?.products?.length > 0 ? `(${warrantyUpsell?.products?.length})` : ""}`}
                                     </Button>
