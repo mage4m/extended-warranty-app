@@ -129,9 +129,8 @@ class WarrantyProductsController extends Controller
     public function warrantyProductRecreate(Request $request)
     {
         /** @var AuthSession */
-        dd($request->all());
         $session = $request->get('shopifySession'); // Provided by the shopify.auth middleware, guaranteed to be active
-        $deletedWarrantyID = "gid://shopify/Product/10173894852881"; // will be replaced with the correct warranty product id
+        $deletedWarrantyID = request('id');
         $warranty = WarrantyProducts::query()->where([
             'warranty_id' => $deletedWarrantyID,
             'shop' => $session->getShop()
