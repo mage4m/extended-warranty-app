@@ -1,6 +1,6 @@
 document.addEventListener("alpine:init", () => {
     Alpine.data("warranty", () => ({
-        appUrl: "https://relief-estimated-purchasing-deliver.trycloudflare.com",
+        appUrl: null,
         productId: null,
         customerId: null,
         shopDomain: null,
@@ -14,6 +14,7 @@ document.addEventListener("alpine:init", () => {
             const warrantyContainer = document.querySelector(
                 ".warranty-container",
             );
+            this.appUrl = warrantyContainer.getAttribute("data-app-url");
             this.productId = warrantyContainer.getAttribute("data-product-id");
             this.customerId =
                 warrantyContainer.getAttribute("data-customer-id");
