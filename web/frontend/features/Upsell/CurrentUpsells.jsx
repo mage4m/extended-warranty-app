@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import {
     Badge,
-    Banner,
     Button,
     DataTable,
     Layout,

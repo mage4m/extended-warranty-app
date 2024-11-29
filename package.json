@@ -9,6 +9,7 @@
         "dev:reset": "npm run shopify app dev -- --reset",
         "push": "shopify app push",
         "generate": "shopify app generate",
+        "g:e": "shopify app generate extension",
         "deploy": "shopify app deploy",
         "info": "shopify app info"
     },

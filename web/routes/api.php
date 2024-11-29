@@ -5,6 +5,7 @@ use App\Http\Controllers\API\{
     UpsellProductSelectorController,
 };
 use App\Http\Controllers\WarrantyProductsController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,3 +40,23 @@ Route::middleware(['shopify.auth'])->group(function () {
     Route::resource('upsell_products', UpsellProductSelectorController::class);
     Route::delete('upsell_products-delete', [UpsellProductSelectorController::class, 'destroy']);
 });
+
+
+Route::get('/warranty', function (Request $request) {
+
+    $productId = $request->query('product_id');
+    $shopDomain = $request->query('shop');
+    return response()->json([
+        'message' => 'APIIII the App',
+        'status' => true,
+        'product_id' => $productId,
+        'shop' => $shopDomain,
+        'features' => [
+            'feature1' => 'Warranty Check',
+            'feature2' => 'Claim Processing',
+            'feature3' => 'History Records',
+        ],
+    ]);
+});
+
+
