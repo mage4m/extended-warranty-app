@@ -8,4 +8,15 @@ use Illuminate\Database\Eloquent\Model;
 class WarrantyProducts extends Model
 {
     use HasFactory;
+
+
+    public function getClausesAttribute($value)
+    {
+        return json_decode($value, true);
+    }
+
+    public function getApplicableProductsAttribute($value)
+    {
+        return json_decode($value, true);
+    }
 }

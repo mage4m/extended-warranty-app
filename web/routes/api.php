@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\WarrantyExtensionController;
 use App\Models\WarrantyProducts;
 use App\Http\Controllers\API\{
     UpsellProductSelectorController,
@@ -42,21 +43,4 @@ Route::middleware(['shopify.auth'])->group(function () {
 });
 
 
-Route::get('/warranty', function (Request $request) {
-
-    $productId = $request->query('product_id');
-    $shopDomain = $request->query('shop');
-    return response()->json([
-        'message' => 'APIIII the App',
-        'status' => true,
-        'product_id' => $productId,
-        'shop' => $shopDomain,
-        'features' => [
-            'feature1' => 'Warranty Check',
-            'feature2' => 'Claim Processing',
-            'feature3' => 'History Records',
-        ],
-    ]);
-});
-
-
+Route::get('/product/warranty/get', [WarrantyExtensionController::class, 'getProductWarranties']);

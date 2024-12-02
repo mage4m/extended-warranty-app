@@ -23,7 +23,7 @@ document.addEventListener("alpine:init", () => {
 
             //! Fetch data from the API
             fetch(
-                `${this.appUrl}/api/warranty?product_id=${this.productId}&shop=${this.shopDomain}`,
+                `${this.appUrl}/api/product/warranty/get?product_id=${this.productId}&shop=${this.shopDomain}`,
             )
                 .then((response) => {
                     if (!response.ok) {
