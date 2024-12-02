@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import {
     Badge,
-    Banner,
     Button,
     DataTable,
     Layout,
@@ -136,13 +135,10 @@ const CurrentUpsells = () => {
         },
     });
 
-    const RecreateProduct = useCallback(
-        async (WarrantyID) => {
-            setLoading(true);
-            await mutation.mutateAsync({ id: WarrantyID });
-        },
-        [],
-    );
+    const RecreateProduct = useCallback(async (WarrantyID) => {
+        setLoading(true);
+        await mutation.mutateAsync({ id: WarrantyID });
+    }, []);
     /***
      * !reduce accepts function: () =>{}, initial state : [] || {}
      * aggregate : intial state
@@ -253,7 +249,7 @@ const CurrentUpsells = () => {
         <>
             <Layout.Section>
                 <LegacyCard sectioned title="Current Upsells">
-                    {Warranty?.length > 0 ? (
+                    {currentUpsells?.length > 0 ? (
                         <DataTable
                             columnContentTypes={[
                                 "text",

@@ -15,11 +15,7 @@ class WarrantyProductsController extends Controller
     public function index()
     {
         try {
-            $allWarranties = WarrantyProducts::all()->map(function ($warranty) {
-                $warranty->clauses = json_decode($warranty->clauses, true);
-                $warranty->applicable_products = json_decode($warranty->applicable_products, true);
-                return $warranty;
-            });
+            $allWarranties = WarrantyProducts::all();
             return response()->json($allWarranties);
         } catch (\Exception $err) {
             Log::error("Failed to update products to database: " . $err->getMessage());

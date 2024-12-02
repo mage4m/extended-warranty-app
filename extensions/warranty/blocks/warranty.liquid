@@ -1,0 +1,101 @@
+{% comment %}
+  {% assign avg_rating = block.settings.product.metafields.demo.avg_rating.value | round %}
+  <span style="color:{{ block.settings.colour }}">
+    {% render 'stars', rating: avg_rating %}
+  </span>
+  {% if avg_rating >= 4 %}
+    <br>
+    <img src="{{ "thumbs-up.png" | asset_img_url: '15x' }}" height="15" width="15" loading="lazy">
+    {{ 'ratings.home.recommendationText' | t }}
+  {% endif %}
+{% endcomment %}
+
+{% comment %} schema  {% endcomment %}
+{% comment %} x-show="open" {% endcomment %}
+{% comment %} "available_if": "{{ app.metafields.conditional.block1 }}", {% endcomment %}
+
+<head>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.8/dist/cdn.min.js"></script>
+</head>
+
+<div
+  class="warranty-container"
+  x-data="warranty"
+  data-app-url="https://styles-voices-establishment-athletes.trycloudflare.com"
+  data-product-id="{{ product.id }}"
+  data-customer-id="{{ customer.id }}"
+  data-shop-domain="{{ shop.permanent_domain }}"
+>
+  <div class="warranty-card">
+    <div class="warranty-header">
+      <span class="warranty-check">✔</span>
+      <p>6 Months of Physical Warranty.</p>
+    </div>
+
+    <div class="warranty-details">
+      <p>$10.00</p>
+      <p class="product-name">Origami Crane Necklace</p>
+      <p>
+        Warranty Facilities: <a href="#">Replace</a><br>
+        Warranty Process: <span class="highlight">On-Site Warranty</span>
+      </p>
+    </div>
+
+    <div class="warranty-options">
+      <h3>Extend Warranty Available</h3>
+      <div class="option-grid">
+        <button class="option-btn">
+          2 Months<br>
+          <span>$10.00</span>
+        </button>
+        <button class="option-btn">
+          4 Years<br>
+          <span>$15.00</span>
+        </button>
+      </div>
+      {% comment %}
+        <h3>Damage Warranty Available</h3>
+        <div class="option-grid">
+            <button class="option-btn">2 Months<br><span>$2.00</span></button>
+        </div>
+      {% endcomment %}
+    </div>
+    <button
+      class="purchase-btn"
+      :style="open ? 'background: green; color: white;' : `background: black;`"
+      type="button"
+      @click="toggle"
+    >
+      Purchase With Warranty
+    </button>
+  </div>
+</div>
+
+
+
+{% comment %} <p> taha {{ product.metafields.my_app_namespace.my_app_metafield.value }} </p> {% endcomment %}
+{% comment %} {{ theme.settings.appUrl }} {% endcomment %}
+
+{% comment %}
+  <script>
+      window.warrantyData = {
+          productId: '{{ product.id }}',
+          customerId: '{{ customer.id }}',
+          shopDomain: '{{ shop.permanent_domain }}',
+      };
+  </script>
+{% endcomment %}
+
+{% schema %}
+{
+  "name": "Warranty",
+  "target": "section",
+  "stylesheet": "warranty.css",
+  "javascript": "warranty.js",
+
+  "settings": [
+    { "type": "product", "id": "product", "label": "product", "autofill": true },
+    { "type": "color", "id": "colour", "label": "Star Colour", "default": "#ff0000" }
+  ]
+}
+{% endschema %}

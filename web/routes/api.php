@@ -1,10 +1,12 @@
 <?php
 
+use App\Http\Controllers\WarrantyExtensionController;
 use App\Models\WarrantyProducts;
 use App\Http\Controllers\API\{
     UpsellProductSelectorController,
 };
 use App\Http\Controllers\WarrantyProductsController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,3 +41,6 @@ Route::middleware(['shopify.auth'])->group(function () {
     Route::resource('upsell_products', UpsellProductSelectorController::class);
     Route::delete('upsell_products-delete', [UpsellProductSelectorController::class, 'destroy']);
 });
+
+
+Route::get('/product/warranty/get', [WarrantyExtensionController::class, 'getProductWarranties']);
