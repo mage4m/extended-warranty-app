@@ -1,0 +1,18 @@
+
+  <!-- Modal for Warranty Clauses -->
+  <div
+    class="warranty_modal"
+    x-show="clausesModal"
+    style="display: none;"
+    @click.away="closeModal"
+  >
+    <div class="warranty_modal-content">
+      <h2>Warranty Clauses</h2>
+      <ul>
+        <template x-for="clause in selectedClauses" :key="clause">
+          <li x-text="clause"></li>
+        </template>
+      </ul>
+      <button class="warranty_close" @click="closeModal">Close</button>
+    </div>
+  </div>

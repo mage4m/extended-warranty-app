@@ -14,34 +14,15 @@
 {% comment %} x-show="open" {% endcomment %}
 {% comment %} "available_if": "{{ app.metafields.conditional.block1 }}", {% endcomment %}
 
-<head>
-  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.8/dist/cdn.min.js"></script>
-</head>
+{% comment %}
+  <div class="warranty-header">
+    <span class="warranty-check">✔</span>
+    <p>6 Months of Physical Warranty.</p>
+  </div>
+{% endcomment %}
 
-<div
-  class="warranty-container"
-  x-data="warranty"
-  data-app-url="https://styles-voices-establishment-athletes.trycloudflare.com"
-  data-product-id="{{ product.id }}"
-  data-customer-id="{{ customer.id }}"
-  data-shop-domain="{{ shop.permanent_domain }}"
->
-  <div class="warranty-card">
-    <div class="warranty-header">
-      <span class="warranty-check">✔</span>
-      <p>6 Months of Physical Warranty.</p>
-    </div>
-
-    <div class="warranty-details">
-      <p>$10.00</p>
-      <p class="product-name">Origami Crane Necklace</p>
-      <p>
-        Warranty Facilities: <a href="#">Replace</a><br>
-        Warranty Process: <span class="highlight">On-Site Warranty</span>
-      </p>
-    </div>
-
-    <div class="warranty-options">
+{% comment %}
+  <div class="warranty-options">
       <h3>Extend Warranty Available</h3>
       <div class="option-grid">
         <button class="option-btn">
@@ -53,13 +34,11 @@
           <span>$15.00</span>
         </button>
       </div>
-      {% comment %}
+
         <h3>Damage Warranty Available</h3>
         <div class="option-grid">
             <button class="option-btn">2 Months<br><span>$2.00</span></button>
         </div>
-      {% endcomment %}
-    </div>
     <button
       class="purchase-btn"
       :style="open ? 'background: green; color: white;' : `background: black;`"
@@ -69,9 +48,79 @@
       Purchase With Warranty
     </button>
   </div>
+{% endcomment %}
+
+<head>
+  <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.8/dist/cdn.min.js"></script>
+</head>
+
+<div
+  class="warranty-container"
+  x-data="warranty"
+  data-app-url="https://certain-dollars-liberia-beyond.trycloudflare.com"
+  data-product-id="{{ product.id }}"
+  data-customer-id="{{ customer.id }}"
+  data-shop-domain="{{ shop.permanent_domain }}"
+  data-product="{{ request.path | json }}"
+>
+  <div class="warranty-card" x-show="open">
+    <!-- Warranty Details Section -->
+    <div class="warranty-details">
+      <p>
+        Warranty Clauses:
+        <a href="#" @click.prevent="openModal" class="highlight">View</a>
+      </p>
+    </div>
+
+    <!-- Warranty Options Section -->
+    <div class="warranty-options">
+      <h3>Warranty's Available</h3>
+      <div
+        class="option-grid"
+        :class="
+          {
+              'two-options': warrantyOptions.length > 1,
+          }
+        "
+      >
+        <template x-for="option in warrantyOptions" :key="option.name">
+          <button
+            :class="
+              {
+                'option-btn active': selectedWarrantyName === option.name,
+                'option-btn': selectedWarrantyName !== option.name
+              }
+            "
+            @click="selectWarranty(option)"
+          >
+            <span x-text="option.duration"></span><br>
+            <span x-text="option.price"></span>
+          </button>
+        </template>
+      </div>
+      <span x-text="warrantyType"></span>
+      <div x-data="{ cartLoader: false }">
+        <button
+          class="purchase-btn"
+          type="button"
+          @click="AddToCart"
+          :disabled="cartLoader"
+        >
+          <span x-show="!cartLoader">Purchase With Warranty</span>
+          <span x-show="cartLoader" class="loader"></span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {% render 'modal' %}
 </div>
 
-
+<script>
+    const data = {
+        "home" : {{ request.path | json }},
+    }
+</script>
 
 {% comment %} <p> taha {{ product.metafields.my_app_namespace.my_app_metafield.value }} </p> {% endcomment %}
 {% comment %} {{ theme.settings.appUrl }} {% endcomment %}
