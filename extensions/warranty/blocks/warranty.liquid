@@ -57,11 +57,11 @@
 <div
   class="warranty-container"
   x-data="warranty"
-  data-app-url="https://certain-dollars-liberia-beyond.trycloudflare.com"
+  data-app-url="https://mentor-refrigerator-seen-chicks.trycloudflare.com"
   data-product-id="{{ product.id }}"
   data-customer-id="{{ customer.id }}"
   data-shop-domain="{{ shop.permanent_domain }}"
-  data-product="{{ request.path | json }}"
+  data-product="{{ request.path }}"
 >
   <div class="warranty-card" x-show="open">
     <!-- Warranty Details Section -->
@@ -77,11 +77,7 @@
       <h3>Warranty's Available</h3>
       <div
         class="option-grid"
-        :class="
-          {
-              'two-options': warrantyOptions.length > 1,
-          }
-        "
+        :class="{ 'two-options': warrantyOptions.length > 1 }"
       >
         <template x-for="option in warrantyOptions" :key="option.name">
           <button
@@ -93,8 +89,9 @@
             "
             @click="selectWarranty(option)"
           >
-            <span x-text="option.duration"></span><br>
+            <span x-text="option.duration"></span>
             <span x-text="option.price"></span>
+            <span style="display: none;" x-text="option.warranty_variant_id"></span>
           </button>
         </template>
       </div>
@@ -102,7 +99,6 @@
       <div x-data="{ cartLoader: false }">
         <button
           class="purchase-btn"
-          type="button"
           @click="AddToCart"
           :disabled="cartLoader"
         >
@@ -117,9 +113,9 @@
 </div>
 
 <script>
-    const data = {
-        "home" : {{ request.path | json }},
-    }
+  const data = {
+      "home" : {{ request.path | json }},
+  }
 </script>
 
 {% comment %} <p> taha {{ product.metafields.my_app_namespace.my_app_metafield.value }} </p> {% endcomment %}

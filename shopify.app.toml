@@ -1,7 +1,7 @@
 # Learn more about configuring your app at https://shopify.dev/docs/apps/tools/cli/configuration
 
 client_id = "613fb85300cbed6a8a058d7d96294a70"
-application_url = "https://certain-dollars-liberia-beyond.trycloudflare.com"
+application_url = "https://mentor-refrigerator-seen-chicks.trycloudflare.com"
 embedded = true
 name = "WarrantyApp"
 handle = "warrantyapp"
@@ -20,9 +20,9 @@ scopes = "read_products,write_products"
 
 [auth]
 redirect_urls = [
-  "https://certain-dollars-liberia-beyond.trycloudflare.com/auth/callback",
-  "https://certain-dollars-liberia-beyond.trycloudflare.com/auth/shopify/callback",
-  "https://certain-dollars-liberia-beyond.trycloudflare.com/api/auth/callback"
+  "https://mentor-refrigerator-seen-chicks.trycloudflare.com/auth/callback",
+  "https://mentor-refrigerator-seen-chicks.trycloudflare.com/auth/shopify/callback",
+  "https://mentor-refrigerator-seen-chicks.trycloudflare.com/api/auth/callback"
 ]
 
 [pos]
