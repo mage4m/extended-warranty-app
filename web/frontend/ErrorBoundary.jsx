@@ -1,4 +1,4 @@
-import { Layout, Text, Page, LegacyCard, LegacyStack } from "@shopify/polaris";
+import { Layout, Text, Page, Card, BlockStack } from "@shopify/polaris";
 
 import React, { useState } from "react";
 
@@ -14,12 +14,12 @@ const ErrorBoundary = ({ children }) => {
             <Page fullWidth>
                 <Layout>
                     <Layout.Section>
-                        <LegacyCard sectioned>
-                            <LegacyStack vertical spacing="loose">
+                        <Card>
+                            <BlockStack gap="400">
                                 <Text
                                     as="h2"
                                     variant="headingLg"
-                                    color="critical"
+                                    tone="critical"
                                 >
                                     Oops, something went wrong!
                                 </Text>
@@ -27,8 +27,8 @@ const ErrorBoundary = ({ children }) => {
                                     We apologize for the inconvenience. Please
                                     try again later or contact support.
                                 </Text>
-                            </LegacyStack>
-                        </LegacyCard>
+                            </BlockStack>
+                        </Card>
                     </Layout.Section>
                 </Layout>
             </Page>

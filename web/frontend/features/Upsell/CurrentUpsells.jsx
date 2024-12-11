@@ -1,11 +1,13 @@
 import React, { useCallback, useState } from "react";
 import {
     Badge,
+    BlockStack,
     Button,
+    Card,
     DataTable,
+    Icon,
+    InlineStack,
     Layout,
-    LegacyCard,
-    LegacyStack,
     Text,
 } from "@shopify/polaris";
 import { useModal } from "./providers/ModalProvider";
@@ -13,7 +15,8 @@ import { QualifyingProducts, WarrantyClausesModal } from "./components";
 import { useUpsell } from "./providers/UpsellProvider";
 import { useApiMutation } from "../../hooks";
 import { useToast } from "../../providers/ToastProvider";
-import { WarrantyRecreate } from "../../utils/api/post";
+import { WarrantyRecreate, WarrantyStatus } from "../../utils/api/post";
+import { DeleteIcon } from "@shopify/polaris-icons";
 
 const CurrentUpsells = () => {
     const { Warranty, refetch } = useUpsell();
@@ -22,6 +25,7 @@ const CurrentUpsells = () => {
     const [selectedProducts, setSelectedProducts] = useState([]);
     const [warranty_id, setWarranty_id] = useState("");
     const [loading, setLoading] = useState(false);
+    const [status_loading, setStatus_Loading] = useState(false);
 
     // const currentUpsells = Warranty?.filter(
     //     (item) => item?.status === "enabled" || item?.status === "disabled",
@@ -139,6 +143,33 @@ const CurrentUpsells = () => {
         setLoading(true);
         await mutation.mutateAsync({ id: WarrantyID });
     }, []);
+
+    const mutationStatus = useApiMutation(WarrantyStatus, "POST", {
+        onSuccess: (data) => {
+            if (data?.success === true) {
+                showToast({
+                    content: data?.message,
+                    duration: 4000,
+                });
+                setStatus_Loading(false);
+                refetch();
+            }
+        },
+        onError: (error) => {
+            showToast({
+                content: error?.message,
+                duration: 3000,
+                error: true,
+            });
+            setStatus_Loading(false);
+        },
+    });
+
+    const handleSatus = useCallback(async (WarrantyID) => {
+        setStatus_Loading(true);
+        await mutationStatus.mutateAsync({ id: WarrantyID });
+    }, []);
+
     /***
      * !reduce accepts function: () =>{}, initial state : [] || {}
      * aggregate : intial state
@@ -151,10 +182,23 @@ const CurrentUpsells = () => {
     const currentUpsells = Warranty?.reduce((aggregate, item) => {
         if (item?.status === "enabled" || item?.status === "disabled") {
             aggregate.push([
-                item?.status === "enabled" ? (
-                    <Badge status="success">Yes</Badge>
+                item?.status === "disabled" ? (
+                    <Button
+                        fullWidth
+                        size="slim"
+                        variant="secondary"
+                        tone="critical"
+                        loading={status_loading}
+                        onClick={() => {
+                            handleSatus(item?.warranty_id);
+                        }}
+                    >
+                        No
+                    </Button>
                 ) : (
-                    <Badge status="critical">No</Badge>
+                    <Badge tone="success" size="large">
+                        Yes
+                    </Badge>
                 ),
                 item?.name,
                 item?.type,
@@ -166,6 +210,7 @@ const CurrentUpsells = () => {
                 "0 (GBP)",
                 <Button
                     size="slim"
+                    variant="primary"
                     onClick={() => {
                         setSelectedClauses(item?.clauses);
                         setWarranty_id(item?.warranty_id);
@@ -180,6 +225,7 @@ const CurrentUpsells = () => {
                 <Button
                     fullWidth
                     size="slim"
+                    variant="primary"
                     onClick={() => {
                         setSelectedProducts(item?.applicable_products);
                         setWarranty_id(item?.warranty_id);
@@ -197,8 +243,6 @@ const CurrentUpsells = () => {
     }, []);
 
     const deletedUpsells = Warranty?.reduce((aggregate, item) => {
-        console.log(item?.warranty_id);
-
         if (item?.status === "recreate") {
             aggregate?.push([
                 <Button
@@ -207,6 +251,7 @@ const CurrentUpsells = () => {
                     onClick={() => {
                         RecreateProduct(item?.warranty_id);
                     }}
+                    variant="primary"
                 >
                     Recreate
                 </Button>,
@@ -225,6 +270,7 @@ const CurrentUpsells = () => {
                         setWarranty_id(item?.warranty_id);
                         toggleModal("edit_warrantyModal");
                     }}
+                    variant="primary"
                 >
                     Edit{" "}
                     {item?.clauses?.length > 0
@@ -248,7 +294,10 @@ const CurrentUpsells = () => {
     return (
         <>
             <Layout.Section>
-                <LegacyCard sectioned title="Current Upsells">
+                <Card>
+                    <Text as="h3" fontWeight="bold">
+                        Current Upsells
+                    </Text>
                     {currentUpsells?.length > 0 ? (
                         <DataTable
                             columnContentTypes={[
@@ -279,19 +328,17 @@ const CurrentUpsells = () => {
                             // footerContent={`Total Upsells: ${currentUpsells.length}`}
                         />
                     ) : (
-                        <LegacyStack
-                            alignment="center"
-                            spacing="loose"
-                            vertical
-                        >
-                            <Text as="h1" variant="headingLg">
-                                You currently have no policy upsells
-                            </Text>
-                            <Text as="p" color="subdued">
-                                Create a new policy to start generating new
-                                revenue!
-                            </Text>
-                        </LegacyStack>
+                        <InlineStack align="center">
+                            <BlockStack gap={"300"} inlineAlign="center">
+                                <Text as="h1" variant="headingLg">
+                                    You currently have no policy upsells
+                                </Text>
+                                <Text as="h3" tone="subdued">
+                                    Create a new policy to start generating new
+                                    revenue!
+                                </Text>
+                            </BlockStack>
+                        </InlineStack>
                     )}
 
                     {modals?.edit_productPickerModal && (
@@ -319,10 +366,15 @@ const CurrentUpsells = () => {
                             id={warranty_id}
                         />
                     )}
-                </LegacyCard>
+                </Card>
+            </Layout.Section>
+            <Layout.Section>
                 {/* Warranty?.filter((item) => item?.status === "recreate").length > 0 */}
                 {deletedUpsells?.length > 0 && (
-                    <LegacyCard title="Deleted Upsells">
+                    <Card>
+                        <Text as="h3" fontWeight="bold">
+                            Deleted Upsells
+                        </Text>
                         <DataTable
                             columnContentTypes={[
                                 "text",
@@ -350,7 +402,7 @@ const CurrentUpsells = () => {
                             fixedFirstColumns={1}
                             hideScrollIndicator={true}
                         />
-                    </LegacyCard>
+                    </Card>
                 )}
             </Layout.Section>
         </>

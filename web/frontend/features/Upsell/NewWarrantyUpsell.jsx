@@ -7,8 +7,12 @@ import {
     Select,
     FormLayout,
     Grid,
-    LegacyCard,
-    LegacyStack,
+    Card,
+    Divider,
+    BlockStack,
+    InlineStack,
+    Icon,
+    Box,
 } from "@shopify/polaris";
 import React, { useState, useCallback } from "react";
 import { useApiMutation } from "../../hooks";
@@ -17,6 +21,7 @@ import { QualifyingProducts, WarrantyClausesModal } from "./components";
 import { useToast } from "../../providers/ToastProvider";
 import { useModal } from "./providers/ModalProvider";
 import { useUpsell } from "./providers/UpsellProvider";
+import { IconsFilledIcon, NoteAddIcon } from "@shopify/polaris-icons";
 
 const NewWarrantyUpsell = () => {
     const { showToast } = useToast();
@@ -153,151 +158,166 @@ const NewWarrantyUpsell = () => {
 
     return (
         <Layout.Section>
-            <LegacyCard sectioned title="Create New Warranty Upsell">
-                <Form onSubmit={handleSubmit}>
-                    <FormLayout>
-                        <Text as="h2" variant="headingMd">
-                            Step 1: Specify Warranty Terms
-                        </Text>
-                        <FormLayout.Group>
+            <Card>
+                <BlockStack gap="300">
+                    <Text as="h1" fontWeight="bold" variant="headingMd">
+                        Create New Warranty Upsell
+                    </Text>
+                    <Form onSubmit={handleSubmit}>
+                        <FormLayout>
+                            <Text as="h2" variant="headingMd">
+                                Step 1: Specify Warranty Terms
+                            </Text>
+                            <FormLayout.Group>
+                                <Grid>
+                                    <Grid.Cell
+                                        columnSpan={{
+                                            lg: 3,
+                                            xl: 3,
+                                            md: 6,
+                                            sm: 6,
+                                            xs: 6,
+                                        }}
+                                    >
+                                        <Select
+                                            label="Type of Upsell"
+                                            options={options}
+                                            onChange={handleInputChange(
+                                                "typeOfUpSell",
+                                            )}
+                                            value={warrantyUpsell?.typeOfUpSell}
+                                        />
+                                    </Grid.Cell>
+                                    <Grid.Cell
+                                        columnSpan={{
+                                            lg: 3,
+                                            xl: 3,
+                                            md: 6,
+                                            sm: 6,
+                                            xs: 6,
+                                        }}
+                                    >
+                                        <TextField
+                                            label="Policy Name"
+                                            value={warrantyUpsell?.policyName}
+                                            onChange={handleInputChange(
+                                                "policyName",
+                                            )}
+                                            helpText={
+                                                !error?.policyName &&
+                                                "The name of the policy your customers will see"
+                                            }
+                                            requiredIndicator
+                                            required
+                                            error={error?.policyName}
+                                        />
+                                    </Grid.Cell>
+
+                                    <Grid.Cell
+                                        columnSpan={{
+                                            lg: 3,
+                                            xl: 3,
+                                            md: 6,
+                                            sm: 6,
+                                            xs: 6,
+                                        }}
+                                    >
+                                        {/* <div className="d-flex duration-wrapper"> */}
+                                        <InlineStack
+                                            gap="200"
+                                            blockAlign="center"
+                                        >
+                                            <div style={{ flex: 1 }}>
+                                                <TextField
+                                                    fullWidth
+                                                    type="text"
+                                                    label={`Duration (${warrantyUpsell?.daysOrYears})`}
+                                                    value={
+                                                        warrantyUpsell?.duration
+                                                    }
+                                                    onChange={(value) => {
+                                                        if (!isNaN(value)) {
+                                                            handleInputChange(
+                                                                "duration",
+                                                            )(value);
+                                                        }
+                                                    }}
+                                                    requiredIndicator
+                                                    required
+                                                    error={error?.duration}
+                                                    helpText={
+                                                        !error?.duration &&
+                                                        "How long coverage is good for"
+                                                    }
+                                                />
+                                            </div>
+
+                                            <Button
+                                                size="slim"
+                                                variant="primary"
+                                                onClick={handleDurationToggle}
+                                            >
+                                                {warrantyUpsell?.daysOrYears}
+                                            </Button>
+                                        </InlineStack>
+
+                                        {/* </div> */}
+                                    </Grid.Cell>
+                                    <Grid.Cell
+                                        columnSpan={{
+                                            lg: 3,
+                                            xl: 3,
+                                            md: 6,
+                                            sm: 6,
+                                            xs: 6,
+                                        }}
+                                    >
+                                        <TextField
+                                            type="text"
+                                            label={
+                                                warrantyUpsell?.typeOfUpSell ===
+                                                "Warranty"
+                                                    ? "Warranty Price"
+                                                    : "Extended Warranty Price"
+                                            }
+                                            value={
+                                                warrantyUpsell?.warrantyPrice
+                                            }
+                                            onChange={(value) => {
+                                                if (!isNaN(value)) {
+                                                    handleInputChange(
+                                                        "warrantyPrice",
+                                                    )(value);
+                                                }
+                                            }}
+                                            helpText={
+                                                !error?.warrantyPrice &&
+                                                "Price is in GBP"
+                                            }
+                                            requiredIndicator
+                                            required
+                                            error={error?.warrantyPrice}
+                                        />
+                                    </Grid.Cell>
+                                </Grid>
+                            </FormLayout.Group>
+                            <Divider borderColor="input-border-active" />
+                            <Text as="h2" variant="headingMd">
+                                Step 2: Set Warranty Clauses and Products
+                            </Text>
                             <Grid>
                                 <Grid.Cell
                                     columnSpan={{
-                                        lg: 3,
-                                        xl: 3,
+                                        lg: 6,
+                                        xl: 6,
                                         md: 6,
                                         sm: 6,
                                         xs: 6,
                                     }}
                                 >
-                                    <Select
-                                        label="Type of Upsell"
-                                        options={options}
-                                        onChange={handleInputChange(
-                                            "typeOfUpSell",
-                                        )}
-                                        value={warrantyUpsell?.typeOfUpSell}
-                                    />
-                                </Grid.Cell>
-                                <Grid.Cell
-                                    columnSpan={{
-                                        lg: 3,
-                                        xl: 3,
-                                        md: 6,
-                                        sm: 6,
-                                        xs: 6,
-                                    }}
-                                >
-                                    <TextField
-                                        label="Policy Name"
-                                        value={warrantyUpsell?.policyName}
-                                        onChange={handleInputChange(
-                                            "policyName",
-                                        )}
-                                        helpText={
-                                            !error?.policyName &&
-                                            "The name of the policy your customers will see"
-                                        }
-                                        requiredIndicator
-                                        required
-                                        error={error?.policyName}
-                                    />
-                                </Grid.Cell>
-
-                                <Grid.Cell
-                                    columnSpan={{
-                                        lg: 3,
-                                        xl: 3,
-                                        md: 6,
-                                        sm: 6,
-                                        xs: 6,
-                                    }}
-                                >
-                                    <div className="d-flex duration-wrapper">
-                                        <TextField
-                                            type="number"
-                                            label={`Duration (${warrantyUpsell?.daysOrYears})`}
-                                            value={warrantyUpsell?.duration}
-                                            onChange={handleInputChange(
-                                                "duration",
-                                            )}
-                                            requiredIndicator
-                                            required
-                                            error={error?.duration}
-                                            // helpText={
-                                            //     !error?.duration &&
-                                            //     "How long coverage is good for"
-                                            // }
-                                        />
-                                        <Button onClick={handleDurationToggle}>
-                                            {warrantyUpsell?.daysOrYears}
-                                        </Button>
-                                    </div>
-                                </Grid.Cell>
-
-                                {/* <Grid.Cell
-                                    columnSpan={{
-                                        lg: 1,
-                                        xl: 1,
-                                        md: 6,
-                                        sm: 6,
-                                        xs: 6,
-                                    }}
-                                >
-                                    <Button onClick={handleDurationToggle}>
-                                        {warrantyUpsell?.daysOrYears}
-                                    </Button>
-                                </Grid.Cell> */}
-                                <Grid.Cell
-                                    columnSpan={{
-                                        lg: 3,
-                                        xl: 3,
-                                        md: 6,
-                                        sm: 6,
-                                        xs: 6,
-                                    }}
-                                >
-                                    <TextField
-                                        type="number"
-                                        label={
-                                            warrantyUpsell?.typeOfUpSell ===
-                                            "Warranty"
-                                                ? "Warranty Price"
-                                                : "Extended Warranty Price"
-                                        }
-                                        value={warrantyUpsell?.warrantyPrice}
-                                        onChange={handleInputChange(
-                                            "warrantyPrice",
-                                        )}
-                                        helpText={
-                                            !error?.warrantyPrice &&
-                                            "Price is in GBP"
-                                        }
-                                        requiredIndicator
-                                        required
-                                        error={error?.warrantyPrice}
-                                    />
-                                </Grid.Cell>
-                            </Grid>
-                        </FormLayout.Group>
-                        <hr />
-
-                        <Text as="h2" variant="headingMd">
-                            Step 2: Set Warranty Clauses and Products
-                        </Text>
-                        <Grid>
-                            <Grid.Cell
-                                columnSpan={{
-                                    lg: 6,
-                                    xl: 6,
-                                    md: 6,
-                                    sm: 6,
-                                    xs: 6,
-                                }}
-                            >
-                                <LegacyStack spacing="loose" vertical>
                                     <Button
                                         fullWidth
+                                        variant="secondary"
                                         size="large"
                                         onClick={() =>
                                             toggleModal("productPickerModal")
@@ -305,88 +325,99 @@ const NewWarrantyUpsell = () => {
                                     >
                                         {`${warrantyUpsell?.products?.length ? "Edit" : "Select"} Qualifying Products ${warrantyUpsell?.products?.length > 0 ? `(${warrantyUpsell?.products?.length})` : ""}`}
                                     </Button>
-                                </LegacyStack>
 
-                                {modals?.productPickerModal && (
-                                    <QualifyingProducts
-                                        ISOpen={false}
-                                        selectedProducts={
-                                            warrantyUpsell?.products || []
-                                        }
-                                        setSelectedProducts={setProducts}
-                                        ProductPicker={() =>
-                                            toggleModal("productPickerModal")
-                                        }
-                                        open={modals?.productPickerModal}
-                                    />
-                                )}
-                                {error?.products && (
-                                    <p
-                                        style={{
-                                            color: "red",
-                                            marginTop: "10px",
-                                        }}
-                                    >
-                                        {error?.products}
-                                    </p>
-                                )}
-                            </Grid.Cell>
-                            <Grid.Cell
-                                columnSpan={{
-                                    lg: 6,
-                                    xl: 6,
-                                    md: 6,
-                                    sm: 6,
-                                    xs: 6,
-                                }}
-                            >
-                                <Button
-                                    fullWidth
-                                    size="large"
-                                    onClick={() => toggleModal("warrantyModal")}
+                                    {modals?.productPickerModal && (
+                                        <QualifyingProducts
+                                            ISOpen={false}
+                                            selectedProducts={
+                                                warrantyUpsell?.products || []
+                                            }
+                                            setSelectedProducts={setProducts}
+                                            ProductPicker={() =>
+                                                toggleModal(
+                                                    "productPickerModal",
+                                                )
+                                            }
+                                            open={modals?.productPickerModal}
+                                        />
+                                    )}
+                                    {error?.products && (
+                                        <Box paddingBlock={"100"}>
+                                            <Text tone="critical" as="p">
+                                                {error?.products}
+                                            </Text>
+                                        </Box>
+                                    )}
+                                </Grid.Cell>
+                                <Grid.Cell
+                                    columnSpan={{
+                                        lg: 6,
+                                        xl: 6,
+                                        md: 6,
+                                        sm: 6,
+                                        xs: 6,
+                                    }}
                                 >
-                                    {`Add Warranty Clauses${warrantyUpsell?.warrantyClauses?.length > 0 ? ` (${warrantyUpsell?.warrantyClauses?.length})` : ""}`}
-                                </Button>
-                                {modals?.warrantyModal && (
-                                    <WarrantyClausesModal
-                                        warrantyClauses={
-                                            warrantyUpsell?.warrantyClauses ||
-                                            []
-                                        }
-                                        setWarrantyClauses={setWarrantyClauses}
-                                        WarrantyModal={() =>
+                                    <Button
+                                        fullWidth
+                                        variant="secondary"
+                                        size="large"
+                                        onClick={() =>
                                             toggleModal("warrantyModal")
                                         }
-                                        open={modals?.warrantyModal}
-                                    />
-                                )}
-                                {error?.warrantyClauses && (
-                                    <p
-                                        style={{
-                                            color: "red",
-                                            marginTop: "10px",
-                                        }}
                                     >
-                                        {error?.warrantyClauses}
-                                    </p>
-                                )}
-                            </Grid.Cell>
-                        </Grid>
+                                        {`Add Warranty Clauses${warrantyUpsell?.warrantyClauses?.length > 0 ? ` (${warrantyUpsell?.warrantyClauses?.length})` : ""}`}
+                                    </Button>
+                                    {modals?.warrantyModal && (
+                                        <WarrantyClausesModal
+                                            warrantyClauses={
+                                                warrantyUpsell?.warrantyClauses ||
+                                                []
+                                            }
+                                            setWarrantyClauses={
+                                                setWarrantyClauses
+                                            }
+                                            WarrantyModal={() =>
+                                                toggleModal("warrantyModal")
+                                            }
+                                            open={modals?.warrantyModal}
+                                        />
+                                    )}
+                                    {error?.warrantyClauses && (
+                                        <Box paddingBlock={"100"}>
+                                            <Text
+                                                tone="critical"
+                                                as="p"
+                                            >
+                                                {error?.warrantyClauses}
+                                            </Text>
+                                        </Box>
+                                    )}
+                                </Grid.Cell>
+                            </Grid>
 
-                        <hr />
+                            <Divider borderColor="input-border-active" />
 
-                        <LegacyStack
-                            alignment="trailing"
-                            distribution="trailing"
-                            spacing="loose"
-                        >
-                            <Button loading={loading} submit primary>
-                                Create New Warranty Upsell
-                            </Button>
-                        </LegacyStack>
-                    </FormLayout>
-                </Form>
-            </LegacyCard>
+                            <InlineStack align="end">
+                                <Button
+                                    variant="primary"
+                                    loading={loading}
+                                    submit
+                                    size="large"
+                                    icon={
+                                        <Icon
+                                            source={NoteAddIcon}
+                                            tone="base"
+                                        />
+                                    }
+                                >
+                                    Create New Warranty Upsell
+                                </Button>
+                            </InlineStack>
+                        </FormLayout>
+                    </Form>
+                </BlockStack>
+            </Card>
         </Layout.Section>
     );
 };

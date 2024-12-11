@@ -10,10 +10,11 @@ import {
     Scrollable,
     SkeletonBodyText,
     Tooltip,
-    LegacyStack,
+    BlockStack,
+    Icon,
 } from "@shopify/polaris";
 import { ResourcePicker } from "@shopify/app-bridge-react";
-// import { XIcon } from "@shopify/polaris-icons";
+import { DeliveryIcon } from "@shopify/polaris-icons";
 
 const ProductSelector = ({
     getUrl,
@@ -77,14 +78,14 @@ const ProductSelector = ({
         );
     return (
         <>
-            <LegacyStack spacing="loose" vertical>
+            <BlockStack gap={"400"}>
                 <Button
                     loading={isSetLoading}
                     fullWidth
                     size={size}
                     onClick={showResourcePicker}
                 >
-                    {`${settingsObj?.length ? edtitle : subtitle} ${title} ${settingsObj?.length > 0 ? `(${settingsObj?.length})` : ''}`}
+                    {`${settingsObj?.length ? edtitle : subtitle} ${title} ${settingsObj?.length > 0 ? `(${settingsObj?.length})` : ""}`}
                 </Button>
                 {!ISOpen ? null : isLoading ? (
                     <SkeletonBodyText />
@@ -144,10 +145,7 @@ const ProductSelector = ({
                                                         width: "100%",
                                                     }}
                                                 >
-                                                    <LegacyStack
-                                                        spacing="tight"
-                                                        vertical
-                                                    >
+                                                    <BlockStack gap={"300"}>
                                                         <Text
                                                             variant="headingSm"
                                                             as="h4"
@@ -169,7 +167,7 @@ const ProductSelector = ({
                                                             </Text>
                                                             {number}
                                                         </Text>
-                                                    </LegacyStack>
+                                                    </BlockStack>
                                                     <ButtonGroup
                                                         segmented
                                                         spacing="loose"
@@ -178,21 +176,23 @@ const ProductSelector = ({
                                                             content="Delete"
                                                             dismissOnMouseOut
                                                         >
-                                                            <div
+
+                                                            <Button
+                                                                tone="critical"
+                                                                size="micro"
                                                                 onClick={() =>
                                                                     handleDelete(
                                                                         id,
                                                                     )
                                                                 }
                                                             >
-                                                                {/* <Icon
-                                                                source={XIcon}
-                                                                style={{
-                                                                    color: "red",
-                                                                }}
-                                                            /> */}
-                                                                delte
-                                                            </div>
+                                                                <Icon
+                                                                    source={
+                                                                        DeliveryIcon
+                                                                    }
+                                                                    tone="critical"
+                                                                />
+                                                            </Button>
                                                         </Tooltip>
                                                     </ButtonGroup>
                                                 </div>
@@ -204,7 +204,7 @@ const ProductSelector = ({
                         </Scrollable>
                     )
                 )}
-            </LegacyStack>
+            </BlockStack>
 
             <ResourcePicker
                 resourceType="Product"

@@ -89,8 +89,8 @@ class WarrantyProductsController extends Controller
             $check = WarrantyProducts::where('shop', $shop)->exists();
             if ($check) {
                 WarrantyProducts::where([
-                'shop' => $shop,
-                'warranty_id' => $warrantyId,
+                    'shop' => $shop,
+                    'warranty_id' => $warrantyId,
                 ])->update(['clauses' => $warrantyClauses]);
             }
 
@@ -111,8 +111,8 @@ class WarrantyProductsController extends Controller
             $check = WarrantyProducts::where('shop', $shop)->exists();
             if ($check) {
                 WarrantyProducts::where([
-                'shop' => $shop,
-                'warranty_id' => $warrantyId,
+                    'shop' => $shop,
+                    'warranty_id' => $warrantyId,
                 ])->update(['applicable_products' => $warrantypProducts]);
             }
 
@@ -174,8 +174,31 @@ class WarrantyProductsController extends Controller
                 return response()->json(["success" => $success, "error" => $error, "message" => $message], $code);
             }
         } else {
-            return response()->json(["error" => true,
-                "message" => "Warranty Data not found! Please create a new Warranty"], 404);
+            return response()->json([
+                "error" => true,
+                "message" => "Warranty Data not found! Please create a new Warranty"
+            ], 404);
+        }
+    }
+
+    public function warrantyProductStatusChange(Request $request)
+    {
+        try {
+            $session = $request->get('shopifySession');
+            $shop = $session->getShop();
+            $warrantyId = $request->id;
+            $check = WarrantyProducts::where('shop', $shop)->exists();
+            if ($check) {
+                WarrantyProducts::where([
+                    'shop' => $shop,
+                    'warranty_id' => $warrantyId,
+                ])->update(['status' => 'enabled']);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Upsell Actived']);
+        } catch (\Exception $err) {
+            Log::error("Failed to update status to database: " . $err->getMessage());
+            return response()->json(['error' => 'Failed to update status'], 500);
         }
     }
 }

@@ -32,6 +32,7 @@ Route::middleware(['shopify.auth'])->group(function () {
         Route::post('/create', [WarrantyProductsController::class, 'createWarrantyProduct']);
 
         Route::post('/recreate', [WarrantyProductsController::class, 'warrantyProductRecreate']);
+        Route::post('/status/change', [WarrantyProductsController::class, 'warrantyProductStatusChange']);
         //! Update the Clauses
         Route::put('/clauses/update', [WarrantyProductsController::class, 'updateClauses']);
         //! Update the Products

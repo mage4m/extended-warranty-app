@@ -3,18 +3,20 @@ import {
     Modal,
     TextField,
     Button,
-    Grid,
     Text,
     ResourceList,
     ResourceItem,
-    LegacyStack,
     List,
+    Icon,
+    InlineStack,
+    BlockStack,
 } from "@shopify/polaris";
 import { items } from "../utils/warrantyclauses";
 import { useApiMutation } from "../../../hooks";
 import { useToast } from "../../../providers/ToastProvider";
 import { WarrantyClausesUpdate } from "../../../utils/api/put";
 import { useUpsell } from "../providers/UpsellProvider";
+import { DeleteIcon } from "@shopify/polaris-icons";
 const WarrantyClausesModal = ({
     warrantyClauses,
     setWarrantyClauses,
@@ -104,19 +106,24 @@ const WarrantyClausesModal = ({
                 open={open}
                 onClose={WarrantyModal}
                 title="Add Warranty Clauses"
-                large
+                iFrameName="Add Warranty Clauses"
+                size="large"
+                primaryAction={
+                    updatedClauses === true
+                        ? [
+                              {
+                                  content: "Save Clauses",
+                                  primary: true,
+                                  loading: loading,
+                                  onAction: handleClauses,
+                              },
+                          ]
+                        : null
+                }
             >
                 <Modal.Section>
-                    <Grid>
-                        <Grid.Cell
-                            columnSpan={{
-                                lg: 10,
-                                xl: 10,
-                                md: 6,
-                                sm: 6,
-                                xs: 6,
-                            }}
-                        >
+                    <InlineStack gap="200" blockAlign="center">
+                        <div style={{ flex: 1 }}>
                             <TextField
                                 fullWidth
                                 label="Warranty Clause"
@@ -127,89 +134,62 @@ const WarrantyClausesModal = ({
                                 }
                                 error={error}
                             />
-                        </Grid.Cell>
-                        <Grid.Cell
-                            columnSpan={{
-                                lg: 2,
-                                xl: 2,
-                                md: 6,
-                                sm: 6,
-                                xs: 6,
-                            }}
+                        </div>
+                        <Button
+                            variant="primary"
+                            size="large"
+                            onClick={handleAdd}
                         >
-                            <LegacyStack
-                                wrap
-                                alignment="trailing"
-                                distribution="trailing"
-                                spacing="loose"
-                            >
-                                <Button
-                                    primary
-                                    size="medium"
-                                    fullWidth
-                                    onClick={handleAdd}
-                                >
-                                    Add Term
-                                </Button>
-                            </LegacyStack>
-                        </Grid.Cell>
-                    </Grid>
+                            Add Term
+                        </Button>
+                    </InlineStack>
                 </Modal.Section>
+
                 {warrantyClauses?.length > 0 && (
                     <Modal.Section>
-                        <Text as="h3" variant="headingSm">
-                            Your clauses
-                        </Text>
-                        <List type="bullet">
-                            {warrantyClauses &&
-                                warrantyClauses?.map((clause, index) => (
-                                    <List.Item key={index}>
-                                        <LegacyStack
-                                            alignment="trailing"
-                                            distribution="equalSpacing"
-                                        >
-                                            <Text
-                                                style={{ flex: 1 }}
-                                                as="h3"
-                                                variant="headingSm"
+                        <BlockStack gap="300">
+                            <Text as="h3" variant="headingMd">
+                                Your Clauses
+                            </Text>
+                            <List type="bullet">
+                                {warrantyClauses &&
+                                    warrantyClauses?.map((clause, index) => (
+                                        <List.Item key={index}>
+                                            <InlineStack
+                                                align="space-between"
+                                                gap="200"
                                             >
-                                                {clause}
-                                            </Text>
-                                            <Button
-                                                size="micro"
-                                                destructive
-                                                onClick={() =>
-                                                    handleDeleteClause(index)
-                                                }
-                                            >
-                                                Delete
-                                            </Button>
-                                        </LegacyStack>
-                                    </List.Item>
-                                ))}
-                        </List>
-                    </Modal.Section>
-                )}
-
-                {updatedClauses === true && (
-                    <Modal.Section>
-                        <LegacyStack
-                            alignment="trailing"
-                            distribution="trailing"
-                        >
-                            <Button
-                                primary
-                                loading={loading}
-                                onClick={handleClauses}
-                            >
-                                Save Clauses
-                            </Button>
-                        </LegacyStack>
+                                                <Text
+                                                    style={{ flex: 1 }}
+                                                    as="h3"
+                                                    variant="headingSm"
+                                                >
+                                                    {clause}
+                                                </Text>
+                                                <Button
+                                                    size="micro"
+                                                    tone="critical"
+                                                    onClick={() =>
+                                                        handleDeleteClause(
+                                                            index,
+                                                        )
+                                                    }
+                                                >
+                                                    <Icon
+                                                        source={DeleteIcon}
+                                                        tone="critical"
+                                                    />
+                                                </Button>
+                                            </InlineStack>
+                                        </List.Item>
+                                    ))}
+                            </List>
+                        </BlockStack>
                     </Modal.Section>
                 )}
 
                 <Modal.Section>
-                    <Text as="h4" variant="headingSm">
+                    <Text as="h2" variant="headingMd">
                         Example clauses
                     </Text>
                     <ResourceList
@@ -231,24 +211,26 @@ const WarrantyClausesModal = ({
                                     name={title}
                                     verticalAlignment="center"
                                 >
-                                    <Text
-                                        variant="headingSm"
-                                        fontWeight="bold"
-                                        as="h3"
+                                    <InlineStack
+                                        align="space-between"
+                                        gap="100"
                                     >
-                                        {title}
-                                    </Text>
-                                    <LegacyStack
-                                        alignment="trailing"
-                                        distribution="trailing"
-                                        spacing="tight"
-                                    >
+                                        <Text
+                                            variant="headingSm"
+                                            fontWeight="bold"
+                                            as="h3"
+                                        >
+                                            {title}
+                                        </Text>
+
                                         <Button
+                                            variant="primary"
+                                            size="slim"
                                             onClick={() => handleUse(title)}
                                         >
                                             use
                                         </Button>
-                                    </LegacyStack>
+                                    </InlineStack>
                                 </ResourceItem>
                             );
                         }}

@@ -1,13 +1,13 @@
 import {
     Layout,
-    LegacyCard,
+    Card,
     Page,
     Text,
     TextField,
     Button,
     Pagination,
-    Grid,
-    LegacyStack,
+    BlockStack,
+    InlineStack,
 } from "@shopify/polaris";
 import React, { useState } from "react";
 
@@ -35,61 +35,48 @@ const SoldWarranties = () => {
         <Page>
             <Layout>
                 <Layout.Section>
-                    <LegacyCard sectioned title="Sold Warranties">
-                        {/* Search bar */}
+                    <Card>
+                        <BlockStack gap="300">
+                            <Text as="h2" fontWeight="bold" variant="headingMd">
+                                Sold Warranties
+                            </Text>
 
-                        <Grid>
-                            <Grid.Cell
-                                columnSpan={{
-                                    lg: 10,
-                                    xl: 10,
-                                    md: 6,
-                                    sm: 6,
-                                    xs: 6,
-                                }}
-                            >
-                                <TextField
-                                    placeholder="Filter by customer email"
-                                    value={email}
-                                    onChange={OnChange}
-                                    autoComplete="off"
-                                    error={error && "Filed are Reuired"}
-                                />
-                            </Grid.Cell>
-                            <Grid.Cell
-                                columnSpan={{
-                                    lg: 2,
-                                    xl: 2,
-                                    md: 6,
-                                    sm: 6,
-                                    xs: 6,
-                                }}
-                            >
-                                <Button primary onClick={handleSearch}>
+                            <InlineStack gap="200" blockAlign="start" align="center">
+                                <div style={{ flex: 1 }}>
+                                    <TextField
+                                        placeholder="Filter by customer email"
+                                        value={email}
+                                        onChange={OnChange}
+                                        autoComplete="off"
+                                        error={error && "Filed are Reuired"}
+                                    />
+                                </div>
+                                <Button
+                                    variant="primary"
+                                    size="large"
+                                    onClick={handleSearch}
+                                >
                                     Search
                                 </Button>
-                            </Grid.Cell>
-                        </Grid>
+                            </InlineStack>
 
-                        <LegacyStack
-                            distribution="center"
-                            alignment="center"
-                            spacing="loose"
-                            vertical
-                        >
-                            <div style={{marginTop:"10px"}}>
-                                <Text as="p" variant="headingMd" color="subdued">
+                            <BlockStack
+                                align="center"
+                                gap="400"
+                                inlineAlign="center"
+                            >
+                                <Text as="p" variant="headingMd" tone="subdued">
                                     No policies found
                                 </Text>
-                            </div>
-                            <Pagination
-                                hasPrevious
-                                hasNext
-                                onPrevious={() => console.log("Previous page")}
-                                onNext={() => console.log("Next page")}
-                            />
-                        </LegacyStack>
-                    </LegacyCard>
+                                <Pagination
+                                    hasPrevious
+                                    hasNext
+                                    onPrevious={() => alert("Previous page")}
+                                    onNext={() => alert("Next page")}
+                                />
+                            </BlockStack>
+                        </BlockStack>
+                    </Card>
                 </Layout.Section>
             </Layout>
         </Page>
